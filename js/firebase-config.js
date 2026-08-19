@@ -1,5 +1,15 @@
+import { initializeApp } from
+    "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
+import { getAuth } from
+    "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+import { getFirestore } from
+    "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+
 const firebaseConfig = {
-    apiKey: "AIzaSyBuSY5uuSpz_YItfoKVBEmuXq4FUZHbzZA",
+    apiKey: "AIzaSyBuSY5uuSpz_YItfoKVBEmuXQ4FUZHbzZA",
     authDomain: "campaign-pro-8b9db.firebaseapp.com",
     projectId: "campaign-pro-8b9db",
     storageBucket: "campaign-pro-8b9db.firebasestorage.app",
@@ -8,7 +18,16 @@ const firebaseConfig = {
     measurementId: "G-GYGVR9C60M"
 };
 
-firebase.initializeApp(firebaseConfig);
 
-const db = firebase.firestore();
-const auth = firebase.auth();
+const app = initializeApp(firebaseConfig);
+
+const auth = getAuth(app);
+
+const db = getFirestore(app);
+
+
+export {
+    app,
+    auth,
+    db
+};
