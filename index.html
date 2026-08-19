@@ -2,6 +2,7 @@
 <html lang="bn">
 
 <head>
+
     <meta charset="UTF-8">
 
     <meta
@@ -11,29 +12,58 @@
 
     <title>CampaignPro</title>
 
+    <!-- CSS -->
     <link
         rel="stylesheet"
         href="css/style.css"
     >
+
+    <!-- Telegram Mini App SDK -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
 </head>
 
 <body>
 
-    <h1>CampaignPro</h1>
+    <div id="app">
 
-    <p id="status">
-        Firebase connecting...
-    </p>
+        <h1>CampaignPro</h1>
 
+        <p id="status">
+            Firebase connecting...
+        </p>
+
+        <hr>
+
+        <h2>Telegram User</h2>
+
+        <div id="telegram-user">
+            Telegram connecting...
+        </div>
+
+    </div>
+
+
+    <!-- Firebase + Telegram -->
     <script type="module">
+
+        /* =====================================================
+           FIREBASE
+        ===================================================== */
 
         import {
             db,
             auth
         } from "./js/firebase-config.js";
 
+
+        /* =====================================================
+           FIREBASE STATUS
+        ===================================================== */
+
         const status =
             document.getElementById("status");
+
 
         if (db && auth) {
 
@@ -44,6 +74,97 @@
 
             status.textContent =
                 "❌ Firebase connection failed.";
+
+        }
+
+
+        /* =====================================================
+           TELEGRAM MINI APP
+        ===================================================== */
+
+        const tg =
+            window.Telegram.WebApp;
+
+
+        /* Telegram Mini App ready */
+
+        tg.ready();
+
+
+        /* Full available height */
+
+        tg.expand();
+
+
+        /* =====================================================
+           TELEGRAM USER
+        ===================================================== */
+
+        const telegramUser =
+            tg.initDataUnsafe?.user;
+
+
+        const userBox =
+            document.getElementById(
+                "telegram-user"
+            );
+
+
+        if (telegramUser) {
+
+            const firstName =
+                telegramUser.first_name || "";
+
+
+            const lastName =
+                telegramUser.last_name || "";
+
+
+            const username =
+                telegramUser.username
+                    ? "@" + telegramUser.username
+                    : "Not available";
+
+
+            const telegramId =
+                telegramUser.id;
+
+
+            userBox.innerHTML = `
+
+                <p>
+                    👤 <strong>Name:</strong>
+                    ${firstName} ${lastName}
+                </p>
+
+                <p>
+                    🆔 <strong>Telegram ID:</strong>
+                    ${telegramId}
+                </p>
+
+                <p>
+                    🔹 <strong>Username:</strong>
+                    ${username}
+                </p>
+
+            `;
+
+
+        } else {
+
+            userBox.innerHTML = `
+
+                <p>
+                    ⚠️ Telegram user information
+                    পাওয়া যায়নি।
+                </p>
+
+                <p>
+                    এই page-টি Telegram Mini App
+                    হিসেবে খুলতে হবে।
+                </p>
+
+            `;
 
         }
 
