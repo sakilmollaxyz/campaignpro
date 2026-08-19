@@ -1,2667 +1,963 @@
 <!DOCTYPE html>
 <html lang="bn">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CampaignPro</title>
-
-  <!-- Telegram Mini App -->
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
-
-  <style>
-    * {
-      box-sizing: border-box;
-    }
-
-    body {
-      margin: 0;
-      font-family: Arial, "Noto Sans Bengali", sans-serif;
-      background: #f4f7fb;
-      color: #172033;
-    }
-
-    button,
-    input,
-    select,
-    textarea {
-      font: inherit;
-    }
-
-    .app {
-      max-width: 1100px;
-      margin: auto;
-      padding: 15px;
-    }
-
-    header {
-      background: #111827;
-      color: white;
-      border-radius: 18px;
-      padding: 18px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-
-    .logo {
-      font-size: 23px;
-      font-weight: 800;
-    }
-
-    .logo span {
-      color: #34d399;
-    }
-
-    .user-mini {
-      font-size: 13px;
-      color: #d1d5db;
-    }
-
-    nav {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      margin: 15px 0;
-    }
-
-    nav button {
-      border: 0;
-      background: white;
-      color: #334155;
-      padding: 10px 13px;
-      border-radius: 10px;
-      cursor: pointer;
-      font-weight: 600;
-    }
-
-    nav button.active {
-      background: #059669;
-      color: white;
-    }
-
-    .page {
-      display: none;
-    }
-
-    .page.active {
-      display: block;
-    }
-
-    .hero {
-      background: linear-gradient(135deg, #111827, #172554);
-      color: white;
-      padding: 35px 25px;
-      border-radius: 22px;
-      margin-bottom: 20px;
-    }
-
-    .hero h1 {
-      font-size: 34px;
-      margin: 8px 0 15px;
-    }
-
-    .hero span {
-      color: #34d399;
-    }
-
-    .hero p {
-      color: #d1d5db;
-      line-height: 1.7;
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 15px;
-    }
-
-    .card {
-      background: white;
-      border-radius: 16px;
-      padding: 20px;
-      margin-bottom: 15px;
-      box-shadow: 0 5px 25px rgba(0,0,0,.04);
-    }
-
-    .stat {
-      font-size: 28px;
-      font-weight: 800;
-      margin-top: 8px;
-    }
-
-    .tier {
-      min-height: 220px;
-    }
-
-    .tier-icon {
-      font-size: 28px;
-    }
-
-    .tier-price {
-      font-size: 30px;
-      font-weight: 800;
-      margin: 10px 0;
-    }
-
-    .muted {
-      color: #64748b;
-      line-height: 1.6;
-    }
-
-    .btn {
-      border: 0;
-      border-radius: 9px;
-      padding: 11px 16px;
-      cursor: pointer;
-      background: #111827;
-      color: white;
-      font-weight: 700;
-    }
-
-    .btn.green {
-      background: #059669;
-    }
-
-    .btn.red {
-      background: #dc2626;
-    }
-
-    .btn.blue {
-      background: #2563eb;
-    }
-
-    .btn.gray {
-      background: #64748b;
-    }
-
-    .btn:disabled {
-      opacity: .5;
-      cursor: not-allowed;
-    }
-
-    input,
-    select,
-    textarea {
-      width: 100%;
-      padding: 12px;
-      border: 1px solid #d1d5db;
-      border-radius: 9px;
-      margin: 7px 0 15px;
-      outline: none;
-      background: white;
-    }
-
-    input:focus,
-    select:focus,
-    textarea:focus {
-      border-color: #059669;
-    }
-
-    textarea {
-      min-height: 110px;
-      resize: vertical;
-    }
-
-    label {
-      font-weight: 600;
-      font-size: 14px;
-    }
-
-    .alert {
-      display: none;
-      padding: 13px;
-      border-radius: 10px;
-      margin-bottom: 15px;
-      background: #dcfce7;
-      color: #166534;
-    }
-
-    .alert.error {
-      background: #fee2e2;
-      color: #991b1b;
-    }
-
-    .country-box {
-      background: #f8fafc;
-      border: 1px solid #e2e8f0;
-      border-radius: 13px;
-      padding: 15px;
-      margin-bottom: 15px;
-    }
-
-    .country-top {
-      display: flex;
-      justify-content: space-between;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-
-    .country-count {
-      color: #059669;
-      font-weight: 800;
-    }
-
-    .country-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 8px;
-      max-height: 380px;
-      overflow-y: auto;
-    }
-
-    .country-item {
-      background: white;
-      border: 1px solid #e5e7eb;
-      border-radius: 9px;
-      padding: 10px;
-    }
-
-    .country-item label {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      cursor: pointer;
-      font-weight: 400;
-    }
-
-    .country-item input {
-      width: auto;
-      margin: 0;
-    }
-
-    .payment {
-      background: #f8fafc;
-      padding: 14px;
-      border-radius: 10px;
-      margin-bottom: 10px;
-    }
-
-    .payment code {
-      color: #047857;
-      font-weight: 700;
-    }
-
-    .table-wrap {
-      overflow-x: auto;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      background: white;
-      min-width: 700px;
-    }
-
-    th,
-    td {
-      padding: 11px;
-      border-bottom: 1px solid #eee;
-      text-align: left;
-      font-size: 13px;
-      vertical-align: top;
-    }
-
-    th {
-      background: #f8fafc;
-    }
-
-    .badge {
-      display: inline-block;
-      padding: 5px 9px;
-      border-radius: 20px;
-      font-size: 11px;
-      font-weight: 800;
-    }
-
-    .pending {
-      background: #fef3c7;
-      color: #92400e;
-    }
-
-    .running {
-      background: #dcfce7;
-      color: #166534;
-    }
-
-    .completed,
-    .approved {
-      background: #dbeafe;
-      color: #1e40af;
-    }
-
-    .rejected {
-      background: #fee2e2;
-      color: #991b1b;
-    }
-
-    .hidden {
-      display: none !important;
-    }
-
-    .login-box {
-      max-width: 500px;
-      margin: 25px auto;
-    }
-
-    .empty {
-      text-align: center;
-      padding: 30px;
-      color: #64748b;
-    }
-
-    .country-tags {
-      display: flex;
-      gap: 5px;
-      flex-wrap: wrap;
-    }
-
-    .country-tag {
-      background: #ecfdf5;
-      color: #047857;
-      border: 1px solid #a7f3d0;
-      padding: 4px 8px;
-      border-radius: 20px;
-      font-size: 11px;
-    }
-
-    footer {
-      text-align: center;
-      color: #64748b;
-      padding: 30px 10px;
-      font-size: 13px;
-    }
-
-    @media(max-width:700px) {
-      .grid {
-        grid-template-columns: 1fr;
-      }
-
-      .country-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .hero h1 {
-        font-size: 28px;
-      }
-
-      .app {
-        padding: 10px;
-      }
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>CampaignPro</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, "Noto Sans Bengali", sans-serif;
+            background: #f4f7fb;
+            color: #172033;
+        }
+
+        header {
+            background: #111827;
+            color: white;
+            padding: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .logo {
+            font-size: 23px;
+            font-weight: bold;
+        }
+
+        .logo span {
+            color: #34d399;
+        }
+
+        nav {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        nav button {
+            border: 0;
+            background: transparent;
+            color: white;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .container {
+            max-width: 700px;
+            margin: 30px auto;
+            padding: 0 15px;
+        }
+
+        .hero {
+            background: linear-gradient(135deg, #111827, #172554);
+            color: white;
+            padding: 35px 25px;
+            border-radius: 20px;
+            margin-bottom: 20px;
+        }
+
+        .hero h1 {
+            font-size: 32px;
+            margin-top: 0;
+        }
+
+        .hero span {
+            color: #34d399;
+        }
+
+        .card {
+            background: white;
+            padding: 22px;
+            border-radius: 16px;
+            margin-bottom: 18px;
+            box-shadow: 0 5px 20px rgba(0,0,0,.05);
+        }
+
+        input {
+            width: 100%;
+            padding: 13px;
+            margin: 7px 0 15px;
+            border: 1px solid #d1d5db;
+            border-radius: 9px;
+            font-size: 15px;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #059669;
+        }
+
+        label {
+            font-weight: bold;
+        }
+
+        .btn {
+            border: 0;
+            padding: 12px 18px;
+            border-radius: 9px;
+            cursor: pointer;
+            font-weight: bold;
+            color: white;
+            background: #059669;
+        }
+
+        .btn:hover {
+            opacity: .9;
+        }
+
+        .btn-red {
+            background: #dc2626;
+        }
+
+        .message {
+            padding: 12px;
+            border-radius: 9px;
+            margin-bottom: 15px;
+            display: none;
+        }
+
+        .success {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .error {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .user-box {
+            background: #ecfdf5;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 15px;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        @media(max-width:600px) {
+            header {
+                align-items: flex-start;
+            }
+
+            .hero h1 {
+                font-size: 27px;
+            }
+        }
+    </style>
 </head>
 
 <body>
 
-<div class="app">
+<header>
 
-  <header>
     <div class="logo">
-      Campaign<span>Pro</span>
+        Campaign<span>Pro</span>
     </div>
 
-    <div class="user-mini" id="telegramUser">
-      Telegram Mini App
-    </div>
-  </header>
+    <nav>
+        <button id="homeBtn">Home</button>
+        <button id="loginNavBtn">Login</button>
+        <button id="registerNavBtn">Register</button>
+        <button id="dashboardNavBtn" class="hidden">Dashboard</button>
+        <button id="logoutBtn" class="hidden">Logout</button>
+    </nav>
 
-  <nav id="navigation">
-    <button data-page="home" class="active">🏠 Home</button>
-    <button data-page="dashboard">📊 Dashboard</button>
-    <button data-page="campaign">🚀 Campaign</button>
-    <button data-page="deposit">💳 Deposit</button>
-    <button data-page="notifications">🔔 Notifications</button>
-    <button data-page="login">🔐 Login</button>
-    <button data-page="register">👤 Register</button>
-    <button data-page="admin" id="adminNav" class="hidden">⚙️ Admin</button>
-  </nav>
+</header>
 
-  <div id="alert" class="alert"></div>
 
-  <!-- HOME -->
-  <section id="page-home" class="page active">
+<div class="container">
 
-    <div class="hero">
-      <div>🚀 Advertise • Grow • Manage</div>
+    <!-- GLOBAL MESSAGE -->
+    <div id="message" class="message"></div>
 
-      <h1>
-        আপনার Campaign চালান,
-        <span>সঠিক Country Target করুন</span>
-      </h1>
 
-      <p>
-        CampaignPro-তে campaign budget নির্বাচন করুন,
-        target country নির্বাচন করুন এবং আপনার campaign submit করুন।
-      </p>
+    <!-- HOME -->
+    <section id="homeSection">
 
-      <button class="btn green" onclick="showPage('campaign')">
-        Create Campaign
-      </button>
-    </div>
+        <div class="hero">
 
-    <h2>Choose Your Campaign</h2>
+            <h1>
+                Welcome to
+                <span>CampaignPro</span>
+            </h1>
 
-    <div class="grid">
+            <p>
+                আপনার Campaign পরিচালনা করুন
+                সহজে এবং নিরাপদে।
+            </p>
 
-      <div class="card tier">
-        <div class="tier-icon">🟢</div>
-        <h3>Normal Campaign</h3>
-        <div class="tier-price">৳50</div>
-        <p class="muted">
-          সর্বোচ্চ 5টি country নির্বাচন করতে পারবেন।
-        </p>
-        <button class="btn green" onclick="selectTier('normal')">
-          Start
-        </button>
-      </div>
-
-      <div class="card tier">
-        <div class="tier-icon">🟡</div>
-        <h3>Medium Campaign</h3>
-        <div class="tier-price">৳100</div>
-        <p class="muted">
-          সর্বোচ্চ 10টি country নির্বাচন করতে পারবেন।
-        </p>
-        <button class="btn green" onclick="selectTier('medium')">
-          Start
-        </button>
-      </div>
-
-      <div class="card tier">
-        <div class="tier-icon">🔴</div>
-        <h3>High Campaign</h3>
-        <div class="tier-price">৳200</div>
-        <p class="muted">
-          সর্বোচ্চ 15টি country নির্বাচন করতে পারবেন।
-        </p>
-        <button class="btn green" onclick="selectTier('high')">
-          Start
-        </button>
-      </div>
-
-    </div>
-
-  </section>
-
-  <!-- LOGIN -->
-  <section id="page-login" class="page">
-
-    <div class="card login-box">
-
-      <h2>🔐 Login</h2>
-
-      <form id="loginForm">
-
-        <label>Email</label>
-        <input id="loginEmail" type="email" required>
-
-        <label>Password</label>
-        <input id="loginPassword" type="password" required>
-
-        <button class="btn green" type="submit">
-          Login
-        </button>
-
-      </form>
-
-      <p class="muted">
-        Account না থাকলে Register করুন।
-      </p>
-
-    </div>
-
-  </section>
-
-  <!-- REGISTER -->
-  <section id="page-register" class="page">
-
-    <div class="card login-box">
-
-      <h2>👤 Create Account</h2>
-
-      <form id="registerForm">
-
-        <label>Name</label>
-        <input id="registerName" required>
-
-        <label>Email</label>
-        <input id="registerEmail" type="email" required>
-
-        <label>Password</label>
-        <input
-          id="registerPassword"
-          type="password"
-          minlength="8"
-          required
-        >
-
-        <button class="btn green" type="submit">
-          Create Account
-        </button>
-
-      </form>
-
-    </div>
-
-  </section>
-
-  <!-- DASHBOARD -->
-  <section id="page-dashboard" class="page">
-
-    <h2>📊 Dashboard</h2>
-
-    <div class="grid">
-
-      <div class="card">
-        <p>Available Balance</p>
-        <div class="stat" id="balance">
-          ৳0.00
-        </div>
-      </div>
-
-      <div class="card">
-        <p>Total Campaigns</p>
-        <div class="stat" id="totalCampaigns">
-          0
-        </div>
-      </div>
-
-      <div class="card">
-        <p>Running Campaigns</p>
-        <div class="stat" id="runningCampaigns">
-          0
-        </div>
-      </div>
-
-    </div>
-
-    <div class="card">
-
-      <h3>Recent Campaigns</h3>
-
-      <div class="table-wrap">
-        <table>
-
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Budget</th>
-              <th>Countries</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-
-          <tbody id="campaignTable">
-          </tbody>
-
-        </table>
-      </div>
-
-    </div>
-
-  </section>
-
-  <!-- DEPOSIT -->
-  <section id="page-deposit" class="page">
-
-    <h2>💳 Deposit Balance</h2>
-
-    <div class="card">
-
-      <h3>Payment Accounts</h3>
-
-      <p class="muted">
-        Payment পাঠানোর পর Transaction ID submit করুন।
-        Admin verification-এর পর balance যোগ হবে।
-      </p>
-
-      <div class="payment">
-        <b>bKash</b><br>
-        <code>+880 1757-879264</code>
-      </div>
-
-      <div class="payment">
-        <b>Nagad</b><br>
-        <code>+880 1757-879264</code>
-      </div>
-
-      <div class="payment">
-        <b>Binance</b><br>
-        <code>528615911</code>
-      </div>
-
-    </div>
-
-    <div class="card">
-
-      <form id="depositForm">
-
-        <label>Payment Method</label>
-
-        <select id="depositMethod" required>
-          <option value="">Select Method</option>
-          <option value="bkash">bKash</option>
-          <option value="nagad">Nagad</option>
-          <option value="binance">Binance</option>
-        </select>
-
-        <label>Amount</label>
-
-        <input
-          id="depositAmount"
-          type="number"
-          min="1"
-          step="0.01"
-          required
-        >
-
-        <label>Transaction ID / TRX</label>
-
-        <input id="depositTrx" required>
-
-        <button class="btn green" type="submit">
-          Submit Deposit
-        </button>
-
-      </form>
-
-    </div>
-
-  </section>
-
-  <!-- CAMPAIGN -->
-  <section id="page-campaign" class="page">
-
-    <h2>🚀 Create Campaign</h2>
-
-    <div class="card">
-
-      <p>
-        Available Balance:
-        <strong id="campaignBalance">৳0.00</strong>
-      </p>
-
-      <form id="campaignForm">
-
-        <label>Campaign Budget</label>
-
-        <select id="tierSelect" required>
-
-          <option value="">
-            Select Campaign Budget
-          </option>
-
-          <option value="normal">
-            🟢 ৳50 - Normal - Maximum 5 Countries
-          </option>
-
-          <option value="medium">
-            🟡 ৳100 - Medium - Maximum 10 Countries
-          </option>
-
-          <option value="high">
-            🔴 ৳200 - High - Maximum 15 Countries
-          </option>
-
-        </select>
-
-        <label>Campaign Amount</label>
-
-        <input id="campaignAmount" readonly required>
-
-        <div class="country-box">
-
-          <div class="country-top">
-
-            <strong>🌍 Select Target Countries</strong>
-
-            <span class="country-count" id="countryCount">
-              0 / 0 Selected
-            </span>
-
-          </div>
-
-          <input
-            id="countrySearch"
-            placeholder="🔍 Search country..."
-          >
-
-          <div class="country-grid" id="countryGrid">
-          </div>
+            <button
+                class="btn"
+                id="startBtn"
+            >
+                Get Started
+            </button>
 
         </div>
 
-        <label>Campaign / Landing URL</label>
+    </section>
 
-        <input
-          id="campaignUrl"
-          type="url"
-          placeholder="https://example.com"
-          required
-        >
 
-        <label>Campaign Details</label>
+    <!-- REGISTER -->
+    <section
+        id="registerSection"
+        class="hidden"
+    >
 
-        <textarea
-          id="campaignDetails"
-          placeholder="Campaign সম্পর্কে প্রয়োজনীয় তথ্য..."
-        ></textarea>
+        <div class="card">
 
-        <button class="btn green" type="submit">
-          Submit Campaign
-        </button>
+            <h2>
+                Create Account
+            </h2>
 
-      </form>
+            <p>
+                নতুন CampaignPro account তৈরি করুন।
+            </p>
 
-    </div>
+            <form id="registerForm">
 
-  </section>
+                <label>
+                    Name
+                </label>
 
-  <!-- NOTIFICATIONS -->
-  <section id="page-notifications" class="page">
+                <input
+                    type="text"
+                    id="registerName"
+                    placeholder="আপনার নাম"
+                    required
+                >
 
-    <h2>🔔 Notifications</h2>
+                <label>
+                    Email
+                </label>
 
-    <div id="notificationList">
-      <div class="card empty">
-        No notifications
-      </div>
-    </div>
+                <input
+                    type="email"
+                    id="registerEmail"
+                    placeholder="example@email.com"
+                    required
+                >
 
-  </section>
+                <label>
+                    Password
+                </label>
 
-  <!-- ADMIN -->
-  <section id="page-admin" class="page">
+                <input
+                    type="password"
+                    id="registerPassword"
+                    placeholder="Minimum 8 characters"
+                    minlength="8"
+                    required
+                >
 
-    <h2>⚙️ Admin Panel</h2>
+                <button
+                    type="submit"
+                    class="btn"
+                >
+                    Create Account
+                </button>
 
-    <div class="grid">
+            </form>
 
-      <div class="card">
-        <p>Users</p>
-        <div class="stat" id="adminUsers">0</div>
-      </div>
+            <p>
+                Already have an account?
+                <button
+                    id="goLoginBtn"
+                    style="border:0;background:none;color:#059669;cursor:pointer;"
+                >
+                    Login
+                </button>
+            </p>
 
-      <div class="card">
-        <p>Pending Deposits</p>
-        <div class="stat" id="adminDeposits">0</div>
-      </div>
+        </div>
 
-      <div class="card">
-        <p>Pending Campaigns</p>
-        <div class="stat" id="adminCampaigns">0</div>
-      </div>
+    </section>
 
-    </div>
 
-    <div class="card">
+    <!-- LOGIN -->
+    <section
+        id="loginSection"
+        class="hidden"
+    >
 
-      <h3>Deposit Requests</h3>
+        <div class="card">
 
-      <div class="table-wrap">
+            <h2>
+                Login
+            </h2>
 
-        <table>
+            <p>
+                আপনার CampaignPro account-এ প্রবেশ করুন।
+            </p>
 
-          <thead>
-            <tr>
-              <th>User</th>
-              <th>Method</th>
-              <th>Amount</th>
-              <th>TRX</th>
-              <th>Status</th>
-              <th>Action</th>
-            </tr>
-          </thead>
+            <form id="loginForm">
 
-          <tbody id="adminDepositTable">
-          </tbody>
+                <label>
+                    Email
+                </label>
 
-        </table>
+                <input
+                    type="email"
+                    id="loginEmail"
+                    placeholder="example@email.com"
+                    required
+                >
 
-      </div>
+                <label>
+                    Password
+                </label>
 
-    </div>
+                <input
+                    type="password"
+                    id="loginPassword"
+                    placeholder="Your password"
+                    required
+                >
 
-    <div class="card">
+                <button
+                    type="submit"
+                    class="btn"
+                >
+                    Login
+                </button>
 
-      <h3>Campaign Requests</h3>
+            </form>
 
-      <div class="table-wrap">
+            <p>
+                Don't have an account?
+                <button
+                    id="goRegisterBtn"
+                    style="border:0;background:none;color:#059669;cursor:pointer;"
+                >
+                    Register
+                </button>
+            </p>
 
-        <table>
+        </div>
 
-          <thead>
-            <tr>
-              <th>User</th>
-              <th>Budget</th>
-              <th>Countries</th>
-              <th>Status</th>
-              <th>Action</th>
-            </tr>
-          </thead>
+    </section>
 
-          <tbody id="adminCampaignTable">
-          </tbody>
 
-        </table>
+    <!-- DASHBOARD -->
+    <section
+        id="dashboardSection"
+        class="hidden"
+    >
 
-      </div>
+        <div class="card">
 
-    </div>
+            <h2>
+                Dashboard
+            </h2>
 
-  </section>
+            <div class="user-box">
 
-  <footer>
-    CampaignPro • Firebase + Telegram Mini App
-    <br><br>
-    © 2026 CampaignPro
-  </footer>
+                <strong>
+                    Logged in successfully! ✅
+                </strong>
+
+                <p id="userName"></p>
+
+                <p id="userEmail"></p>
+
+                <button
+                    id="dashboardLogoutBtn"
+                    class="btn btn-red"
+                >
+                    Logout
+                </button>
+
+            </div>
+
+        </div>
+
+    </section>
 
 </div>
 
 
 <script type="module">
 
-/* =========================================================
-   FIREBASE
-========================================================= */
+    /*
+     * Firebase
+     */
 
-import {
-  initializeApp
-} from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+    import {
+        auth,
+        db
+    } from "./js/firebase-config.js";
 
-import {
-  getAuth,
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  signOut,
-  onAuthStateChanged
-} from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
+    import {
+        createUserWithEmailAndPassword,
+        signInWithEmailAndPassword,
+        signOut,
+        onAuthStateChanged
+    } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
 
-import {
-  getFirestore,
-  doc,
-  getDoc,
-  setDoc,
-  addDoc,
-  collection,
-  query,
-  where,
-  orderBy,
-  limit,
-  getDocs,
-  updateDoc,
-  increment,
-  serverTimestamp
-} from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
-
-
-/* =========================================================
-   YOUR FIREBASE CONFIG
-========================================================= */
-
-const firebaseConfig = {
-  apiKey: "AIzaSyBuSY5uuSpz_YItfoKVBEmuXQ4FUZHbzZA",
-  authDomain: "campaign-pro-8b9db.firebaseapp.com",
-  projectId: "campaign-pro-8b9db",
-  storageBucket: "campaign-pro-8b9db.firebasestorage.app",
-  messagingSenderId: "561667716127",
-  appId: "1:561667716127:web:d1b3595ff11e044be8112a",
-  measurementId: "G-GYGVR9C60M"
-};
-
-
-/* =========================================================
-   INITIALIZE FIREBASE
-========================================================= */
-
-const app = initializeApp(firebaseConfig);
-
-const auth = getAuth(app);
-
-const db = getFirestore(app);
-
-
-/* =========================================================
-   TELEGRAM
-========================================================= */
-
-const tg = window.Telegram?.WebApp;
-
-if (tg) {
-
-  tg.ready();
-
-  tg.expand();
-
-  const tgUser = tg.initDataUnsafe?.user;
-
-  if (tgUser) {
-
-    document.getElementById("telegramUser").textContent =
-      `👋 ${tgUser.first_name || "User"}`;
-
-  }
-}
-
-
-/* =========================================================
-   DATA
-========================================================= */
-
-const TIERS = {
-
-  normal: {
-    amount: 50,
-    limit: 5
-  },
-
-  medium: {
-    amount: 100,
-    limit: 10
-  },
-
-  high: {
-    amount: 200,
-    limit: 15
-  }
-
-};
-
-
-const COUNTRIES = [
-
-  "United States",
-  "United Kingdom",
-  "Canada",
-  "Australia",
-  "Germany",
-  "France",
-  "Netherlands",
-  "Switzerland",
-  "Sweden",
-  "Norway",
-  "Denmark",
-  "Finland",
-  "Belgium",
-  "Austria",
-  "Ireland",
-  "New Zealand",
-  "Singapore",
-  "Japan",
-  "South Korea",
-  "Hong Kong",
-  "Taiwan",
-  "United Arab Emirates",
-  "Saudi Arabia",
-  "Qatar",
-  "Kuwait",
-  "Israel",
-  "Italy",
-  "Spain",
-  "Portugal",
-  "Poland",
-  "Czech Republic",
-  "Romania",
-  "Hungary",
-  "Greece",
-  "Brazil",
-  "Mexico",
-  "Argentina",
-  "Chile",
-  "Colombia",
-  "South Africa",
-  "Nigeria",
-  "Egypt",
-  "Kenya",
-  "Ghana",
-  "Philippines",
-  "India",
-  "Indonesia",
-  "Malaysia",
-  "Thailand",
-  "Vietnam",
-  "Turkey"
+    import {
+        doc,
+        setDoc,
+        serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
 
-];
 
+    /*
+     * Sections
+     */
 
-/* =========================================================
-   STATE
-========================================================= */
+    const homeSection =
+        document.getElementById("homeSection");
 
-let currentUser = null;
+    const registerSection =
+        document.getElementById("registerSection");
 
-let currentUserData = null;
+    const loginSection =
+        document.getElementById("loginSection");
 
-let isAdmin = false;
+    const dashboardSection =
+        document.getElementById("dashboardSection");
 
-let countryLimit = 0;
 
+    /*
+     * Navigation buttons
+     */
 
-/* =========================================================
-   HELPERS
-========================================================= */
+    const homeBtn =
+        document.getElementById("homeBtn");
 
-function showAlert(message, error = false) {
+    const loginNavBtn =
+        document.getElementById("loginNavBtn");
 
-  const box =
-    document.getElementById("alert");
+    const registerNavBtn =
+        document.getElementById("registerNavBtn");
 
-  box.textContent = message;
+    const dashboardNavBtn =
+        document.getElementById("dashboardNavBtn");
 
-  box.className =
-    error
-      ? "alert error"
-      : "alert";
+    const logoutBtn =
+        document.getElementById("logoutBtn");
 
-  box.style.display = "block";
+    const startBtn =
+        document.getElementById("startBtn");
 
-  setTimeout(() => {
+    const goLoginBtn =
+        document.getElementById("goLoginBtn");
 
-    box.style.display = "none";
+    const goRegisterBtn =
+        document.getElementById("goRegisterBtn");
 
-  }, 4000);
-}
+    const dashboardLogoutBtn =
+        document.getElementById("dashboardLogoutBtn");
 
 
-function money(value) {
+    /*
+     * User information
+     */
 
-  return "৳" +
-    Number(value || 0).toLocaleString(
-      "en-BD",
-      {
-        minimumFractionDigits: 2
-      }
-    );
+    const userName =
+        document.getElementById("userName");
 
-}
+    const userEmail =
+        document.getElementById("userEmail");
 
 
-function statusBadge(status) {
+    /*
+     * Message
+     */
 
-  return `
-    <span class="badge ${status}">
-      ${String(status).toUpperCase()}
-    </span>
-  `;
+    const message =
+        document.getElementById("message");
 
-}
 
-
-window.showPage = function(page) {
-
-  document
-    .querySelectorAll(".page")
-    .forEach(p => p.classList.remove("active"));
-
-  document
-    .getElementById(`page-${page}`)
-    ?.classList.add("active");
-
-  document
-    .querySelectorAll("nav button")
-    .forEach(btn => {
-
-      btn.classList.toggle(
-        "active",
-        btn.dataset.page === page
-      );
-
-    });
-
-  window.scrollTo({
-    top: 0,
-    behavior: "smooth"
-  });
-
-};
-
-
-window.selectTier = function(tier) {
-
-  showPage("campaign");
-
-  document.getElementById("tierSelect").value = tier;
-
-  updateTier();
-
-};
-
-
-/* =========================================================
-   NAVIGATION
-========================================================= */
-
-document
-  .querySelectorAll("nav button")
-  .forEach(button => {
-
-    button.addEventListener(
-      "click",
-      () => {
-
-        const page =
-          button.dataset.page;
-
-        if (
-          ["dashboard", "campaign", "deposit",
-           "notifications", "admin"]
-          .includes(page)
-          &&
-          !currentUser
-        ) {
-
-          showAlert(
-            "প্রথমে Login করুন।",
-            true
-          );
-
-          showPage("login");
-
-          return;
-        }
-
-        if (
-          page === "admin" &&
-          !isAdmin
-        ) {
-
-          showAlert(
-            "Admin access নেই।",
-            true
-          );
-
-          return;
-        }
-
-        showPage(page);
-
-      }
-    );
-
-  });
-
-
-/* =========================================================
-   COUNTRY UI
-========================================================= */
-
-function buildCountries() {
-
-  const grid =
-    document.getElementById(
-      "countryGrid"
-    );
-
-  grid.innerHTML = "";
-
-  COUNTRIES.forEach(country => {
-
-    const item =
-      document.createElement("div");
-
-    item.className =
-      "country-item";
-
-    item.dataset.country =
-      country.toLowerCase();
-
-    item.innerHTML = `
-
-      <label>
-
-        <input
-          type="checkbox"
-          value="${country}"
-          class="country-checkbox"
-        >
-
-        <span>${country}</span>
-
-      </label>
-
-    `;
-
-    grid.appendChild(item);
-
-  });
-
-  document
-    .querySelectorAll(".country-checkbox")
-    .forEach(box => {
-
-      box.addEventListener(
-        "change",
-        updateCountryCount
-      );
-
-    });
-
-}
-
-
-function updateCountryCount() {
-
-  const boxes =
-    document.querySelectorAll(
-      ".country-checkbox"
-    );
-
-  const selected =
-    document.querySelectorAll(
-      ".country-checkbox:checked"
-    ).length;
-
-  document.getElementById(
-    "countryCount"
-  ).textContent =
-    `${selected} / ${countryLimit} Selected`;
-
-  boxes.forEach(box => {
-
-    if (
-      !box.checked &&
-      countryLimit > 0 &&
-      selected >= countryLimit
+    function showMessage(
+        text,
+        type = "success"
     ) {
 
-      box.disabled = true;
+        message.textContent = text;
 
-    } else {
+        message.className =
+            "message " + type;
 
-      box.disabled =
-        countryLimit === 0;
+        message.style.display =
+            "block";
 
+        setTimeout(() => {
+
+            message.style.display =
+                "none";
+
+        }, 5000);
     }
 
-  });
 
-}
+    /*
+     * Show section
+     */
 
+    function showSection(section) {
 
-function updateTier() {
+        homeSection.classList.add("hidden");
+        registerSection.classList.add("hidden");
+        loginSection.classList.add("hidden");
+        dashboardSection.classList.add("hidden");
 
-  const tier =
-    document.getElementById(
-      "tierSelect"
-    ).value;
+        section.classList.remove("hidden");
 
-  const amountInput =
-    document.getElementById(
-      "campaignAmount"
-    );
-
-  if (!TIERS[tier]) {
-
-    countryLimit = 0;
-
-    amountInput.value = "";
-
-  } else {
-
-    countryLimit =
-      TIERS[tier].limit;
-
-    amountInput.value =
-      TIERS[tier].amount;
-
-  }
-
-  document
-    .querySelectorAll(".country-checkbox")
-    .forEach(box => {
-
-      box.checked = false;
-
-    });
-
-  updateCountryCount();
-
-}
-
-
-document
-  .getElementById("tierSelect")
-  .addEventListener(
-    "change",
-    updateTier
-  );
-
-
-document
-  .getElementById("countrySearch")
-  .addEventListener(
-    "input",
-    function() {
-
-      const search =
-        this.value
-          .trim()
-          .toLowerCase();
-
-      document
-        .querySelectorAll(".country-item")
-        .forEach(item => {
-
-          item.classList.toggle(
-            "hidden",
-            !item.dataset.country.includes(search)
-          );
-
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth"
         });
-
-    }
-  );
-
-
-buildCountries();
-
-
-/* =========================================================
-   REGISTER
-========================================================= */
-
-document
-  .getElementById("registerForm")
-  .addEventListener(
-    "submit",
-    async function(e) {
-
-      e.preventDefault();
-
-      const name =
-        document.getElementById(
-          "registerName"
-        ).value.trim();
-
-      const email =
-        document.getElementById(
-          "registerEmail"
-        ).value.trim();
-
-      const password =
-        document.getElementById(
-          "registerPassword"
-        ).value;
-
-      try {
-
-        const result =
-          await createUserWithEmailAndPassword(
-            auth,
-            email,
-            password
-          );
-
-        await setDoc(
-          doc(
-            db,
-            "users",
-            result.user.uid
-          ),
-          {
-
-            name,
-
-            email,
-
-            balance: 0,
-
-            role: "user",
-
-            createdAt:
-              serverTimestamp()
-
-          }
-        );
-
-        showAlert(
-          "✅ Account তৈরি হয়েছে।"
-        );
-
-        showPage("dashboard");
-
-      } catch (error) {
-
-        showAlert(
-          firebaseError(error),
-          true
-        );
-
-      }
-
-    }
-  );
-
-
-/* =========================================================
-   LOGIN
-========================================================= */
-
-document
-  .getElementById("loginForm")
-  .addEventListener(
-    "submit",
-    async function(e) {
-
-      e.preventDefault();
-
-      const email =
-        document.getElementById(
-          "loginEmail"
-        ).value.trim();
-
-      const password =
-        document.getElementById(
-          "loginPassword"
-        ).value;
-
-      try {
-
-        await signInWithEmailAndPassword(
-          auth,
-          email,
-          password
-        );
-
-        showAlert(
-          "✅ Login successful."
-        );
-
-        showPage("dashboard");
-
-      } catch (error) {
-
-        showAlert(
-          firebaseError(error),
-          true
-        );
-
-      }
-
-    }
-  );
-
-
-/* =========================================================
-   FIREBASE ERROR
-========================================================= */
-
-function firebaseError(error) {
-
-  const code =
-    error?.code || "";
-
-  if (
-    code.includes(
-      "auth/invalid-credential"
-    )
-  ) {
-
-    return "Email অথবা password ভুল।";
-
-  }
-
-  if (
-    code.includes(
-      "auth/email-already-in-use"
-    )
-  ) {
-
-    return "এই email ইতিমধ্যে registered।";
-
-  }
-
-  if (
-    code.includes(
-      "auth/weak-password"
-    )
-  ) {
-
-    return "Password কমপক্ষে 6 characters হতে হবে।";
-
-  }
-
-  return error?.message ||
-    "Something went wrong.";
-
-}
-
-
-/* =========================================================
-   AUTH STATE
-========================================================= */
-
-onAuthStateChanged(
-  auth,
-  async user => {
-
-    currentUser = user;
-
-    if (!user) {
-
-      currentUserData = null;
-
-      isAdmin = false;
-
-      document
-        .getElementById("adminNav")
-        .classList.add("hidden");
-
-      return;
-
     }
 
-    await loadUserData();
 
-    await loadDashboard();
+    /*
+     * Navigation
+     */
 
-    await loadNotifications();
-
-    if (isAdmin) {
-
-      document
-        .getElementById("adminNav")
-        .classList.remove("hidden");
-
-      await loadAdmin();
-
-    }
-
-  }
-);
-
-
-/* =========================================================
-   USER DATA
-========================================================= */
-
-async function loadUserData() {
-
-  if (!currentUser) return;
-
-  const ref =
-    doc(
-      db,
-      "users",
-      currentUser.uid
+    homeBtn.addEventListener(
+        "click",
+        () => showSection(homeSection)
     );
 
-  const snap =
-    await getDoc(ref);
-
-  if (!snap.exists()) {
-
-    await setDoc(
-      ref,
-      {
-
-        name:
-          currentUser.email
-            ?.split("@")[0] ||
-          "User",
-
-        email:
-          currentUser.email,
-
-        balance: 0,
-
-        role: "user",
-
-        createdAt:
-          serverTimestamp()
-
-      }
+    loginNavBtn.addEventListener(
+        "click",
+        () => showSection(loginSection)
     );
 
-    currentUserData = {
-      balance: 0,
-      role: "user"
-    };
-
-  } else {
-
-    currentUserData =
-      snap.data();
-
-  }
-
-  isAdmin =
-    currentUserData.role === "admin";
-
-}
-
-
-/* =========================================================
-   DASHBOARD
-========================================================= */
-
-async function loadDashboard() {
-
-  if (!currentUser) return;
-
-  const balance =
-    currentUserData?.balance || 0;
-
-  document.getElementById(
-    "balance"
-  ).textContent =
-    money(balance);
-
-  document.getElementById(
-    "campaignBalance"
-  ).textContent =
-    money(balance);
-
-  const q =
-    query(
-      collection(db, "campaigns"),
-      where(
-        "userId",
-        "==",
-        currentUser.uid
-      ),
-      orderBy(
-        "createdAt",
-        "desc"
-      ),
-      limit(10)
+    registerNavBtn.addEventListener(
+        "click",
+        () => showSection(registerSection)
     );
 
-  try {
+    startBtn.addEventListener(
+        "click",
+        () => {
 
-    const snap =
-      await getDocs(q);
+            if (auth.currentUser) {
 
-    let total = 0;
+                showSection(
+                    dashboardSection
+                );
 
-    let running = 0;
+            } else {
 
-    const tbody =
-      document.getElementById(
-        "campaignTable"
-      );
-
-    tbody.innerHTML = "";
-
-    snap.forEach(item => {
-
-      const c =
-        item.data();
-
-      total++;
-
-      if (c.status === "running") {
-
-        running++;
-
-      }
-
-      const countries =
-        c.countries || [];
-
-      tbody.innerHTML += `
-
-        <tr>
-
-          <td>
-            #${item.id.substring(0,8)}
-          </td>
-
-          <td>
-            ${money(c.amount)}
-          </td>
-
-          <td>
-
-            <div class="country-tags">
-
-              ${countries.map(
-                x =>
-                `<span class="country-tag">
-                  ${escapeHtml(x)}
-                </span>`
-              ).join("")}
-
-            </div>
-
-          </td>
-
-          <td>
-            ${statusBadge(c.status)}
-          </td>
-
-        </tr>
-
-      `;
-
-    });
-
-    if (!tbody.innerHTML) {
-
-      tbody.innerHTML = `
-        <tr>
-          <td colspan="4" class="empty">
-            No campaigns yet.
-          </td>
-        </tr>
-      `;
-
-    }
-
-    document.getElementById(
-      "totalCampaigns"
-    ).textContent = total;
-
-    document.getElementById(
-      "runningCampaigns"
-    ).textContent = running;
-
-  } catch (error) {
-
-    console.error(error);
-
-  }
-
-}
-
-
-/* =========================================================
-   DEPOSIT
-========================================================= */
-
-document
-  .getElementById("depositForm")
-  .addEventListener(
-    "submit",
-    async function(e) {
-
-      e.preventDefault();
-
-      if (!currentUser) {
-
-        showPage("login");
-
-        return;
-
-      }
-
-      const method =
-        document.getElementById(
-          "depositMethod"
-        ).value;
-
-      const amount =
-        Number(
-          document.getElementById(
-            "depositAmount"
-          ).value
-        );
-
-      const trx =
-        document.getElementById(
-          "depositTrx"
-        ).value.trim();
-
-      if (!method || amount <= 0 || !trx) {
-
-        showAlert(
-          "সব তথ্য সঠিকভাবে দিন।",
-          true
-        );
-
-        return;
-
-      }
-
-      try {
-
-        await addDoc(
-          collection(
-            db,
-            "deposits"
-          ),
-          {
-
-            userId:
-              currentUser.uid,
-
-            email:
-              currentUser.email,
-
-            method,
-
-            amount,
-
-            trx,
-
-            status:
-              "pending",
-
-            createdAt:
-              serverTimestamp()
-
-          }
-        );
-
-        showAlert(
-          "✅ Deposit request submitted."
-        );
-
-        document
-          .getElementById("depositForm")
-          .reset();
-
-      } catch (error) {
-
-        showAlert(
-          "Deposit submit failed.",
-          true
-        );
-
-        console.error(error);
-
-      }
-
-    }
-  );
-
-
-/* =========================================================
-   CAMPAIGN
-========================================================= */
-
-document
-  .getElementById("campaignForm")
-  .addEventListener(
-    "submit",
-    async function(e) {
-
-      e.preventDefault();
-
-      if (!currentUser) {
-
-        showPage("login");
-
-        return;
-
-      }
-
-      const tier =
-        document.getElementById(
-          "tierSelect"
-        ).value;
-
-      const amount =
-        Number(
-          document.getElementById(
-            "campaignAmount"
-          ).value
-        );
-
-      const url =
-        document.getElementById(
-          "campaignUrl"
-        ).value.trim();
-
-      const details =
-        document.getElementById(
-          "campaignDetails"
-        ).value.trim();
-
-      const selected =
-        Array.from(
-          document.querySelectorAll(
-            ".country-checkbox:checked"
-          )
-        ).map(
-          x => x.value
-        );
-
-      if (!TIERS[tier]) {
-
-        showAlert(
-          "Campaign budget নির্বাচন করুন।",
-          true
-        );
-
-        return;
-
-      }
-
-      if (
-        selected.length < 1 ||
-        selected.length > TIERS[tier].limit
-      ) {
-
-        showAlert(
-          `এই campaign-এ 1 থেকে ${TIERS[tier].limit}টি country নির্বাচন করুন।`,
-          true
-        );
-
-        return;
-
-      }
-
-      if (
-        !url ||
-        !url.startsWith("http")
-      ) {
-
-        showAlert(
-          "Valid campaign URL দিন।",
-          true
-        );
-
-        return;
-
-      }
-
-      const balance =
-        Number(
-          currentUserData?.balance || 0
-        );
-
-      if (balance < amount) {
-
-        showAlert(
-          "আপনার balance যথেষ্ট নয়।",
-          true
-        );
-
-        return;
-
-      }
-
-      try {
-
-        /*
-         * NOTE:
-         * Client-side balance deduction is only a temporary UI
-         * implementation.
-         *
-         * Final production security will be added through
-         * Firebase Security Rules / trusted backend.
-         */
-
-        const campaignRef =
-          await addDoc(
-            collection(
-              db,
-              "campaigns"
-            ),
-            {
-
-              userId:
-                currentUser.uid,
-
-              email:
-                currentUser.email,
-
-              tier,
-
-              amount,
-
-              url,
-
-              details,
-
-              countries:
-                selected,
-
-              status:
-                "pending",
-
-              createdAt:
-                serverTimestamp()
+                showSection(
+                    registerSection
+                );
 
             }
-          );
 
-        await updateDoc(
-          doc(
-            db,
-            "users",
-            currentUser.uid
-          ),
-          {
-            balance:
-              increment(-amount)
-          }
+        }
+    );
+
+    goLoginBtn.addEventListener(
+        "click",
+        () => showSection(loginSection)
+    );
+
+    goRegisterBtn.addEventListener(
+        "click",
+        () => showSection(registerSection)
+    );
+
+    dashboardNavBtn.addEventListener(
+        "click",
+        () => showSection(dashboardSection)
+    );
+
+
+    /*
+     * REGISTER
+     */
+
+    document
+        .getElementById("registerForm")
+        .addEventListener(
+            "submit",
+            async function(event) {
+
+                event.preventDefault();
+
+                const name =
+                    document
+                        .getElementById("registerName")
+                        .value
+                        .trim();
+
+                const email =
+                    document
+                        .getElementById("registerEmail")
+                        .value
+                        .trim();
+
+                const password =
+                    document
+                        .getElementById("registerPassword")
+                        .value;
+
+                if (password.length < 8) {
+
+                    showMessage(
+                        "Password কমপক্ষে 8 characters হতে হবে।",
+                        "error"
+                    );
+
+                    return;
+                }
+
+                try {
+
+                    const result =
+                        await createUserWithEmailAndPassword(
+                            auth,
+                            email,
+                            password
+                        );
+
+                    const user =
+                        result.user;
+
+
+                    /*
+                     * Save user profile
+                     * in Firestore
+                     */
+
+                    await setDoc(
+                        doc(
+                            db,
+                            "users",
+                            user.uid
+                        ),
+                        {
+                            name: name,
+                            email: user.email,
+                            balance: 0,
+                            role: "user",
+                            createdAt:
+                                serverTimestamp()
+                        }
+                    );
+
+
+                    showMessage(
+                        "Account successfully created! ✅"
+                    );
+
+                    document
+                        .getElementById("registerForm")
+                        .reset();
+
+                    showSection(
+                        dashboardSection
+                    );
+
+                } catch (error) {
+
+                    console.error(error);
+
+                    let text =
+                        "Registration failed.";
+
+                    if (
+                        error.code ===
+                        "auth/email-already-in-use"
+                    ) {
+
+                        text =
+                            "এই email দিয়ে account আগে থেকেই আছে।";
+
+                    } else if (
+                        error.code ===
+                        "auth/invalid-email"
+                    ) {
+
+                        text =
+                            "Email address সঠিক নয়।";
+
+                    } else if (
+                        error.code ===
+                        "auth/weak-password"
+                    ) {
+
+                        text =
+                            "Password আরও শক্তিশালী দিন।";
+                    }
+
+                    showMessage(
+                        text,
+                        "error"
+                    );
+                }
+
+            }
         );
 
-        currentUserData.balance =
-          balance - amount;
 
-        showAlert(
-          "✅ Campaign successfully submitted."
+    /*
+     * LOGIN
+     */
+
+    document
+        .getElementById("loginForm")
+        .addEventListener(
+            "submit",
+            async function(event) {
+
+                event.preventDefault();
+
+                const email =
+                    document
+                        .getElementById("loginEmail")
+                        .value
+                        .trim();
+
+                const password =
+                    document
+                        .getElementById("loginPassword")
+                        .value;
+
+                try {
+
+                    await signInWithEmailAndPassword(
+                        auth,
+                        email,
+                        password
+                    );
+
+                    showMessage(
+                        "Login successful! ✅"
+                    );
+
+                    document
+                        .getElementById("loginForm")
+                        .reset();
+
+                    showSection(
+                        dashboardSection
+                    );
+
+                } catch (error) {
+
+                    console.error(error);
+
+                    let text =
+                        "Login failed.";
+
+                    if (
+                        error.code ===
+                        "auth/invalid-credential"
+                    ) {
+
+                        text =
+                            "Email অথবা password ভুল।";
+
+                    } else if (
+                        error.code ===
+                        "auth/user-not-found"
+                    ) {
+
+                        text =
+                            "এই email দিয়ে কোনো account পাওয়া যায়নি।";
+
+                    } else if (
+                        error.code ===
+                        "auth/wrong-password"
+                    ) {
+
+                        text =
+                            "Password ভুল।";
+                    }
+
+                    showMessage(
+                        text,
+                        "error"
+                    );
+                }
+
+            }
         );
 
-        document
-          .getElementById("campaignForm")
-          .reset();
 
-        updateTier();
+    /*
+     * LOGOUT
+     */
 
-        await loadDashboard();
+    async function logoutUser() {
 
-        showPage("dashboard");
+        try {
 
-      } catch (error) {
+            await signOut(auth);
 
-        console.error(error);
+            showMessage(
+                "Logout successful."
+            );
 
-        showAlert(
-          "Campaign submit failed.",
-          true
+            showSection(homeSection);
+
+        } catch (error) {
+
+            console.error(error);
+
+            showMessage(
+                "Logout failed.",
+                "error"
+            );
+        }
+    }
+
+
+    logoutBtn.addEventListener(
+        "click",
+        logoutUser
+    );
+
+    dashboardLogoutBtn.addEventListener(
+        "click",
+        logoutUser
+    );
+
+
+    /*
+     * AUTH STATE
+     */
+
+    onAuthStateChanged(
+        auth,
+        function(user) {
+
+            if (user) {
+
+                /*
+                 * User logged in
+                 */
+
+                loginNavBtn.classList.add(
+                    "hidden"
+                );
+
+                registerNavBtn.classList.add(
+                    "hidden"
+                );
+
+                dashboardNavBtn.classList.remove(
+                    "hidden"
+                );
+
+                logoutBtn.classList.remove(
+                    "hidden"
+                );
+
+
+                userEmail.textContent =
+                    "Email: " +
+                    user.email;
+
+                /*
+                 * Display name comes
+                 * from Firestore profile.
+                 */
+
+                import(
+                    "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js"
+                ).then(async ({
+                    getDoc,
+                    doc
+                }) => {
+
+                    try {
+
+                        const profile =
+                            await getDoc(
+                                doc(
+                                    db,
+                                    "users",
+                                    user.uid
+                                )
+                            );
+
+                        if (
+                            profile.exists()
+                        ) {
+
+                            const data =
+                                profile.data();
+
+                            userName.textContent =
+                                "Name: " +
+                                (data.name || "User");
+
+                        } else {
+
+                            userName.textContent =
+                                "Name: User";
+                        }
+
+                    } catch (error) {
+
+                        console.error(error);
+
+                        userName.textContent =
+                            "Name: User";
+                    }
+
+                });
+
+
+            } else {
+
+                /*
+                 * User logged out
+                 */
+
+                loginNavBtn.classList.remove(
+                    "hidden"
+                );
+
+                registerNavBtn.classList.remove(
+                    "hidden"
+                );
+
+                dashboardNavBtn.classList.add(
+                    "hidden"
+                );
+
+                logoutBtn.classList.add(
+                    "hidden"
+                );
+
+                showSection(homeSection);
+            }
+
+        }
+    );
+
+
+    /*
+     * Firebase connection check
+     */
+
+    if (auth && db) {
+
+        console.log(
+            "✅ Firebase Authentication + Firestore connected successfully!"
         );
-
-      }
 
     }
-  );
-
-
-/* =========================================================
-   NOTIFICATIONS
-========================================================= */
-
-async function loadNotifications() {
-
-  if (!currentUser) return;
-
-  const box =
-    document.getElementById(
-      "notificationList"
-    );
-
-  try {
-
-    const q =
-      query(
-        collection(
-          db,
-          "notifications"
-        ),
-        where(
-          "userId",
-          "==",
-          currentUser.uid
-        ),
-        orderBy(
-          "createdAt",
-          "desc"
-        ),
-        limit(50)
-      );
-
-    const snap =
-      await getDocs(q);
-
-    box.innerHTML = "";
-
-    snap.forEach(item => {
-
-      const n =
-        item.data();
-
-      box.innerHTML += `
-
-        <div class="card">
-
-          <h3>
-            ${escapeHtml(
-              n.title || "Notification"
-            )}
-          </h3>
-
-          <p>
-            ${escapeHtml(
-              n.message || ""
-            )}
-          </p>
-
-        </div>
-
-      `;
-
-    });
-
-    if (!box.innerHTML) {
-
-      box.innerHTML = `
-        <div class="card empty">
-          No notifications
-        </div>
-      `;
-
-    }
-
-  } catch (error) {
-
-    console.error(error);
-
-  }
-
-}
-
-
-/* =========================================================
-   ADMIN
-========================================================= */
-
-async function loadAdmin() {
-
-  if (!isAdmin) return;
-
-  try {
-
-    const usersSnap =
-      await getDocs(
-        collection(
-          db,
-          "users"
-        )
-      );
-
-    document.getElementById(
-      "adminUsers"
-    ).textContent =
-      usersSnap.size;
-
-
-    const depositQuery =
-      query(
-        collection(
-          db,
-          "deposits"
-        ),
-        where(
-          "status",
-          "==",
-          "pending"
-        )
-      );
-
-    const depositSnap =
-      await getDocs(
-        depositQuery
-      );
-
-    document.getElementById(
-      "adminDeposits"
-    ).textContent =
-      depositSnap.size;
-
-
-    const campaignQuery =
-      query(
-        collection(
-          db,
-          "campaigns"
-        ),
-        where(
-          "status",
-          "==",
-          "pending"
-        )
-      );
-
-    const campaignSnap =
-      await getDocs(
-        campaignQuery
-      );
-
-    document.getElementById(
-      "adminCampaigns"
-    ).textContent =
-      campaignSnap.size;
-
-
-    const depositTable =
-      document.getElementById(
-        "adminDepositTable"
-      );
-
-    depositTable.innerHTML = "";
-
-    depositSnap.forEach(item => {
-
-      const d =
-        item.data();
-
-      depositTable.innerHTML += `
-
-        <tr>
-
-          <td>
-            ${escapeHtml(
-              d.email || d.userId
-            )}
-          </td>
-
-          <td>
-            ${escapeHtml(d.method)}
-          </td>
-
-          <td>
-            ${money(d.amount)}
-          </td>
-
-          <td>
-            ${escapeHtml(d.trx)}
-          </td>
-
-          <td>
-            ${statusBadge(d.status)}
-          </td>
-
-          <td>
-
-            <button
-              class="btn green"
-              onclick="approveDeposit('${item.id}', '${d.userId}', ${Number(d.amount)})"
-            >
-              Approve
-            </button>
-
-            <button
-              class="btn red"
-              onclick="rejectDeposit('${item.id}')"
-            >
-              Reject
-            </button>
-
-          </td>
-
-        </tr>
-
-      `;
-
-    });
-
-
-    const campaignTable =
-      document.getElementById(
-        "adminCampaignTable"
-      );
-
-    campaignTable.innerHTML = "";
-
-    campaignSnap.forEach(item => {
-
-      const c =
-        item.data();
-
-      campaignTable.innerHTML += `
-
-        <tr>
-
-          <td>
-            ${escapeHtml(
-              c.email || c.userId
-            )}
-          </td>
-
-          <td>
-            ${money(c.amount)}
-          </td>
-
-          <td>
-
-            <div class="country-tags">
-
-              ${(c.countries || [])
-                .map(
-                  x =>
-                  `<span class="country-tag">
-                    ${escapeHtml(x)}
-                  </span>`
-                )
-                .join("")}
-
-            </div>
-
-          </td>
-
-          <td>
-            ${statusBadge(c.status)}
-          </td>
-
-          <td>
-
-            <button
-              class="btn green"
-              onclick="runCampaign('${item.id}', '${c.userId}')"
-            >
-              Run
-            </button>
-
-            <button
-              class="btn red"
-              onclick="rejectCampaign('${item.id}', '${c.userId}', ${Number(c.amount)})"
-            >
-              Reject + Refund
-            </button>
-
-          </td>
-
-        </tr>
-
-      `;
-
-    });
-
-  } catch (error) {
-
-    console.error(
-      "Admin error:",
-      error
-    );
-
-  }
-
-}
-
-
-/* =========================================================
-   ADMIN: APPROVE DEPOSIT
-========================================================= */
-
-window.approveDeposit =
-async function(
-  depositId,
-  userId,
-  amount
-) {
-
-  if (!isAdmin) return;
-
-  try {
-
-    await updateDoc(
-      doc(
-        db,
-        "deposits",
-        depositId
-      ),
-      {
-        status:
-          "approved"
-      }
-    );
-
-    await updateDoc(
-      doc(
-        db,
-        "users",
-        userId
-      ),
-      {
-        balance:
-          increment(amount)
-      }
-    );
-
-    await addDoc(
-      collection(
-        db,
-        "notifications"
-      ),
-      {
-
-        userId,
-
-        title:
-          "Deposit Approved",
-
-        message:
-          `${money(amount)} আপনার balance-এ যোগ হয়েছে।`,
-
-        createdAt:
-          serverTimestamp()
-
-      }
-    );
-
-    showAlert(
-      "✅ Deposit approved."
-    );
-
-    await loadAdmin();
-
-  } catch (error) {
-
-    console.error(error);
-
-    showAlert(
-      "Action failed.",
-      true
-    );
-
-  }
-
-};
-
-
-/* =========================================================
-   ADMIN: REJECT DEPOSIT
-========================================================= */
-
-window.rejectDeposit =
-async function(
-  depositId
-) {
-
-  if (!isAdmin) return;
-
-  try {
-
-    await updateDoc(
-      doc(
-        db,
-        "deposits",
-        depositId
-      ),
-      {
-        status:
-          "rejected"
-      }
-    );
-
-    showAlert(
-      "Deposit rejected."
-    );
-
-    await loadAdmin();
-
-  } catch (error) {
-
-    console.error(error);
-
-    showAlert(
-      "Action failed.",
-      true
-    );
-
-  }
-
-};
-
-
-/* =========================================================
-   ADMIN: RUN CAMPAIGN
-========================================================= */
-
-window.runCampaign =
-async function(
-  campaignId,
-  userId
-) {
-
-  if (!isAdmin) return;
-
-  try {
-
-    await updateDoc(
-      doc(
-        db,
-        "campaigns",
-        campaignId
-      ),
-      {
-        status:
-          "running"
-      }
-    );
-
-    await addDoc(
-      collection(
-        db,
-        "notifications"
-      ),
-      {
-
-        userId,
-
-        title:
-          "Campaign Running",
-
-        message:
-          `Campaign ${campaignId} is now running.`,
-
-        createdAt:
-          serverTimestamp()
-
-      }
-    );
-
-    showAlert(
-      "Campaign is now running."
-    );
-
-    await loadAdmin();
-
-  } catch (error) {
-
-    console.error(error);
-
-    showAlert(
-      "Action failed.",
-      true
-    );
-
-  }
-
-};
-
-
-/* =========================================================
-   ADMIN: REJECT CAMPAIGN + REFUND
-========================================================= */
-
-window.rejectCampaign =
-async function(
-  campaignId,
-  userId,
-  amount
-) {
-
-  if (!isAdmin) return;
-
-  try {
-
-    await updateDoc(
-      doc(
-        db,
-        "campaigns",
-        campaignId
-      ),
-      {
-        status:
-          "rejected"
-      }
-    );
-
-    await updateDoc(
-      doc(
-        db,
-        "users",
-        userId
-      ),
-      {
-        balance:
-          increment(amount)
-      }
-    );
-
-    await addDoc(
-      collection(
-        db,
-        "notifications"
-      ),
-      {
-
-        userId,
-
-        title:
-          "Campaign Rejected",
-
-        message:
-          `${money(amount)} refund করা হয়েছে।`,
-
-        createdAt:
-          serverTimestamp()
-
-      }
-    );
-
-    showAlert(
-      "Campaign rejected and refunded."
-    );
-
-    await loadAdmin();
-
-  } catch (error) {
-
-    console.error(error);
-
-    showAlert(
-      "Action failed.",
-      true
-    );
-
-  }
-
-};
-
-
-/* =========================================================
-   HTML ESCAPE
-========================================================= */
-
-function escapeHtml(value) {
-
-  return String(value ?? "")
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
-
-}
-
-
-/* =========================================================
-   INITIAL
-========================================================= */
-
-console.log(
-  "✅ CampaignPro Firebase initialized"
-);
 
 </script>
 
