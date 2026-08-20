@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login - CampaignPro</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { 
+            font-family: Arial, sans-serif; 
+            background: #0f172a; 
+            color: #f8fafc; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            height: 100vh; 
+            padding: 20px;
+        }
+        .login-card {
+            background: #1e293b; padding: 40px 30px; border-radius: 16px;
+            width: 100%; max-width: 400px; box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+            border: 1px solid #334155;
+        }
+        .login-card h2 { text-align: center; margin-bottom: 8px; color: #38bdf8; font-size: 24px; }
+        .subtitle { text-align: center; color: #94a3b8; font-size: 13px; margin-bottom: 25px; }
+        .form-group { margin-bottom: 18px; }
+        .form-group label { display: block; margin-bottom: 7px; font-size: 13px; font-weight: bold; color: #cbd5e1; }
+        .form-group input {
+            width: 100%; padding: 14px; border: 1px solid #475569; border-radius: 9px;
+            background: #0f172a; color: #f8fafc; outline: none; transition: .2s;
+        }
+        .form-group input:focus { border-color: #38bdf8; box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15); }
+        .btn {
+            width: 100%; padding: 14px; background: #0ea5e9; color: white; border: none;
+            border-radius: 9px; font-size: 15px; font-weight: bold; cursor: pointer; margin-top: 10px;
+        }
+        .btn:hover { background: #0284c7; }
+        .error {
+            background: #7f1d1d; color: #fca5a5; padding: 10px; border-radius: 8px;
+            font-size: 13px; text-align: center; margin-top: 15px; display: none; border: 1px solid #991b1b;
+        }
+        .success {
+            background: #14532d; color: #86efac; padding: 10px; border-radius: 8px;
+            font-size: 13px; text-align: center; margin-top: 15px; display: none; border: 1px solid #166534;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="login-card">
+        <h2>Admin Portal</h2>
+        <p class="subtitle">CampaignPro Management System</p>
+        
+        <form id="adminLoginForm">
+            <div class="form-group">
+                <label>Admin Email</label>
+                <!-- এখানে আপনার ইমেইলটি দিন -->
+                <input type="email" id="email" required placeholder="admin@gmail.com">
+            </div>
+            <div class="form-group">
+                <label>Security Password</label>
+                <input type="password" id="password" required placeholder="••••••••">
+            </div>
+            <button type="submit" class="btn" id="loginBtn">Secure Login</button>
+            <div id="errorMsg" class="error"></div>
+            <div id="successMsg" class="success">লগইন সফল! ড্যাশবোর্ডে নেওয়া হচ্ছে...</div>
+        </form>
+    </div>
+
+    <script type="module">
+        import { auth } from './firebase.js';
+        import { signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+        const form = document.getElementById('adminLoginForm');
+        const errorMsg = document.getElementById('errorMsg');
+        const successMsg = document.getElementById('successMsg');
+        const loginBtn = document.getElementById('loginBtn');
+
+        // ⚠️ আপনার ফায়ারবেসে তৈরি করা অ্যাডমিন ইমেইলটি এখানে হুবহু লিখুন:
+        const ADMIN_EMAIL = "sakilmollaxyz@gmail.com"; 
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            errorMsg.style.display = 'none';
+            successMsg.style.display = 'none';
+            loginBtn.textContent = "Checking...";
+            
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+
+            // ইমেইল চেক
+            if(email.toLowerCase() !== ADMIN_EMAIL.toLowerCase()) {
+                errorMsg.textContent = "অ্যাক্সেস ডিনাইড: আপনি অ্যাডমিন নন!";
+                errorMsg.style.display = 'block';
+                loginBtn.textContent = "Secure Login";
+                return;
+            }
+
+            try {
+                // লগইন রিকোয়েস্ট
+                await signInWithEmailAndPassword(auth, email, password);
+                
+                successMsg.style.display = 'block';
+                setTimeout(() => {
+                    window.location.href = "admin.html";
+                }, 1000);
+            } catch (error) {
+                console.error("Login Error:", error);
+                if (error.code === 'auth/invalid-credential' || error.code === 'auth/user-not-found') {
+                    errorMsg.textContent = "ফায়ারবেসে এই ইমেইল বা পাসওয়ার্ড ভুল দেখাচ্ছে!";
+                } else {
+                    errorMsg.textContent = "লগইন করতে সমস্যা হচ্ছে: " + error.message;
+                }
+                errorMsg.style.display = 'block';
+                loginBtn.textContent = "Secure Login";
+            }
+        });
+    </script>
+</body>
+</html>

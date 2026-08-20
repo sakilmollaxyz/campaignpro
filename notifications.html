@@ -1,0 +1,1119 @@
+<!DOCTYPE html>
+<html lang="bn">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Notifications - CampaignPro</title>
+
+    <!-- টেলিগ্রাম ওয়েবের স্ক্রিপ্ট -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family:
+                Arial,
+                "Noto Sans Bengali",
+                "Segoe UI",
+                sans-serif;
+
+            background: #f5f7fb;
+            color: #172033;
+
+            min-height: 100vh;
+        }
+
+
+        /* =====================================================
+           SIDEBAR
+        ===================================================== */
+
+        .sidebar {
+            position: fixed;
+
+            top: 0;
+            left: 0;
+
+            width: 250px;
+            height: 100vh;
+
+            background: #111827;
+            color: #ffffff;
+
+            padding: 22px 15px;
+
+            overflow-y: auto;
+
+            z-index: 1000;
+
+            transition: transform .25s ease;
+
+            display: flex;
+            flex-direction: column;
+        }
+
+
+        /* =====================================================
+           BRAND
+        ===================================================== */
+
+        .brand {
+            padding: 5px 12px 25px;
+
+            border-bottom:
+                1px solid #263142;
+
+            margin-bottom: 20px;
+        }
+
+        .brand-name {
+            font-size: 23px;
+
+            font-weight: 800;
+
+            letter-spacing: -.3px;
+        }
+
+        .brand-name span {
+            color: #10b981;
+        }
+
+        .brand-subtitle {
+            color: #94a3b8;
+
+            font-size: 11px;
+
+            margin-top: 5px;
+        }
+
+
+        /* =====================================================
+           MENU TITLE
+        ===================================================== */
+
+        .menu-title {
+            color: #64748b;
+
+            font-size: 11px;
+
+            font-weight: 700;
+
+            text-transform: uppercase;
+
+            padding: 0 12px;
+
+            margin-bottom: 8px;
+
+            letter-spacing: .5px;
+        }
+
+
+        /* =====================================================
+           MENU
+        ===================================================== */
+
+        .sidebar-menu {
+            list-style: none;
+        }
+
+        .sidebar-menu li {
+            margin-bottom: 4px;
+        }
+
+        .sidebar-menu a {
+            display: flex;
+
+            align-items: center;
+
+            gap: 11px;
+
+            padding: 11px 12px;
+
+            color: #cbd5e1;
+
+            text-decoration: none;
+
+            border-radius: 9px;
+
+            font-size: 14px;
+
+            font-weight: 600;
+
+            transition:
+                background .2s,
+                color .2s,
+                transform .2s;
+        }
+
+        .sidebar-menu a:hover {
+            background: #1f2937;
+
+            color: #ffffff;
+
+            transform:
+                translateX(2px);
+        }
+
+        .sidebar-menu a.active {
+            background: #059669;
+
+            color: #ffffff;
+
+            box-shadow:
+                0 4px 12px
+                rgba(5, 150, 105, .18);
+        }
+
+        .menu-icon {
+            width: 22px;
+
+            min-width: 22px;
+
+            text-align: center;
+
+            font-size: 16px;
+        }
+
+
+        /* =====================================================
+           SIDEBAR BOTTOM
+        ===================================================== */
+
+        .sidebar-bottom {
+            margin-top: auto;
+
+            padding-top: 15px;
+        }
+
+
+        /* =====================================================
+           HELP & SUPPORT
+        ===================================================== */
+
+        .help-link {
+            display: flex;
+
+            align-items: center;
+
+            gap: 11px;
+
+            padding: 11px 12px;
+
+            color: #cbd5e1;
+
+            text-decoration: none;
+
+            border-radius: 9px;
+
+            font-size: 14px;
+
+            font-weight: 600;
+
+            transition:
+                background .2s,
+                color .2s,
+                transform .2s;
+        }
+
+        .help-link:hover {
+            background: #1f2937;
+
+            color: #ffffff;
+
+            transform:
+                translateX(2px);
+        }
+
+
+        /* =====================================================
+           LOGOUT BUTTON
+        ===================================================== */
+
+        .logout-btn {
+            width: 100%;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: flex-start;
+
+            gap: 11px;
+
+            margin-top: 12px;
+
+            padding: 11px 12px;
+
+            border: 1px solid
+                rgba(255, 255, 255, .07);
+
+            border-radius: 9px;
+
+            background: rgba(255, 255, 255, .035);
+
+            color: #cbd5e1;
+
+            font-family: inherit;
+
+            font-size: 14px;
+
+            font-weight: 600;
+
+            cursor: pointer;
+
+            box-shadow:
+                0 3px 10px
+                rgba(0, 0, 0, .10);
+
+            transition:
+                background .2s,
+                color .2s,
+                border-color .2s,
+                transform .2s,
+                box-shadow .2s;
+        }
+
+        .logout-btn:hover {
+            background:
+                rgba(239, 68, 68, .10);
+
+            color: #fca5a5;
+
+            border-color:
+                rgba(239, 68, 68, .18);
+
+            transform:
+                translateY(-1px);
+
+            box-shadow:
+                0 5px 14px
+                rgba(0, 0, 0, .15);
+        }
+
+        .logout-icon {
+            width: 22px;
+
+            min-width: 22px;
+
+            text-align: center;
+
+            font-size: 16px;
+        }
+
+
+        /* =====================================================
+           MOBILE TOPBAR
+        ===================================================== */
+
+        .mobile-topbar {
+            display: none;
+
+            position: fixed;
+
+            top: 0;
+            left: 0;
+            right: 0;
+
+            height: 62px;
+
+            background: #111827;
+
+            color: #ffffff;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            padding: 0 16px;
+
+            z-index: 900;
+
+            box-shadow:
+                0 3px 15px
+                rgba(0, 0, 0, .15);
+        }
+
+        .mobile-brand {
+            font-size: 20px;
+
+            font-weight: 800;
+        }
+
+        .mobile-brand span {
+            color: #10b981;
+        }
+
+        .menu-button {
+            border: none;
+
+            background: #1f2937;
+
+            color: #ffffff;
+
+            width: 40px;
+            height: 40px;
+
+            border-radius: 8px;
+
+            font-size: 20px;
+
+            cursor: pointer;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            transition: .2s;
+        }
+
+        .menu-button:hover {
+            background: #374151;
+        }
+
+
+        /* =====================================================
+           OVERLAY
+        ===================================================== */
+
+        .sidebar-overlay {
+            display: none;
+
+            position: fixed;
+
+            inset: 0;
+
+            background:
+                rgba(0, 0, 0, .45);
+
+            z-index: 950;
+        }
+
+
+        /* =====================================================
+           MAIN CONTENT
+        ===================================================== */
+
+        .main-content {
+            margin-left: 250px;
+
+            min-height: 100vh;
+
+            padding: 30px;
+        }
+
+        .page {
+            width: 100%;
+
+            max-width: 900px;
+
+            margin: 0 auto;
+        }
+
+
+        /* =====================================================
+           PAGE TITLE
+        ===================================================== */
+
+        .page-title {
+            margin-bottom: 22px;
+        }
+
+        .page-title h1 {
+            font-size: 28px;
+
+            margin-bottom: 7px;
+
+            line-height: 1.3;
+        }
+
+        .page-title p {
+            color: #64748b;
+
+            font-size: 14px;
+
+            line-height: 1.7;
+        }
+
+
+        /* =====================================================
+           NOTIFICATION CARDS
+        ===================================================== */
+
+        .notification-card {
+            background: #ffffff;
+
+            border-radius: 14px;
+
+            padding: 18px;
+
+            margin-bottom: 14px;
+
+            border: 1px solid #e8edf3;
+
+            box-shadow: 0 5px 20px rgba(15, 23, 42, 0.04);
+
+            transition: transform .2s, box-shadow .2s;
+        }
+
+        .notification-card:hover {
+            transform: translateY(-2px);
+
+            box-shadow: 0 8px 25px rgba(15, 23, 42, 0.07);
+        }
+
+        .notification-top {
+            display: flex;
+
+            align-items: flex-start;
+
+            gap: 14px;
+        }
+
+        .notification-icon {
+            width: 44px;
+
+            height: 44px;
+
+            border-radius: 10px;
+
+            background: #ecfdf5;
+
+            color: #059669;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            font-size: 20px;
+
+            flex-shrink: 0;
+        }
+
+        .notification-content {
+            flex: 1;
+        }
+
+        .notification-content h3 {
+            font-size: 16px;
+
+            margin-bottom: 5px;
+
+            font-weight: 700;
+
+            color: #172033;
+        }
+
+        .notification-content p {
+            color: #64748b;
+
+            font-size: 14px;
+
+            line-height: 1.6;
+        }
+
+        .notification-time {
+            margin-top: 10px;
+
+            color: #94a3b8;
+
+            font-size: 12px;
+
+            font-weight: 600;
+        }
+
+
+        /* =====================================================
+           EMPTY STATE
+        ===================================================== */
+
+        .empty {
+            background: #ffffff;
+
+            border-radius: 16px;
+
+            padding: 60px 20px;
+
+            text-align: center;
+
+            border: 1px solid #e8edf3;
+
+            box-shadow: 0 8px 30px rgba(15, 23, 42, .04);
+        }
+
+        .empty-icon {
+            font-size: 46px;
+
+            margin-bottom: 14px;
+        }
+
+        .empty h3 {
+            font-size: 18px;
+
+            margin-bottom: 8px;
+
+            font-weight: 700;
+
+            color: #172033;
+        }
+
+        .empty p {
+            color: #64748b;
+
+            font-size: 14px;
+        }
+
+
+        /* =====================================================
+           MOBILE
+        ===================================================== */
+
+        @media (max-width: 700px) {
+
+            .sidebar {
+                transform:
+                    translateX(-100%);
+
+                box-shadow:
+                    8px 0 25px
+                    rgba(0, 0, 0, .18);
+            }
+
+            .sidebar.open {
+                transform:
+                    translateX(0);
+            }
+
+            .sidebar-overlay.show {
+                display: block;
+            }
+
+            .mobile-topbar {
+                display: flex;
+            }
+
+            .main-content {
+                margin-left: 0;
+
+                padding:
+                    82px 15px 25px;
+            }
+
+            .page-title h1 {
+                font-size: 24px;
+            }
+
+            .page-title p {
+                font-size: 13px;
+            }
+
+            .empty {
+                padding: 40px 15px;
+            }
+
+        }
+
+
+        /* =====================================================
+           SMALL MOBILE
+        ===================================================== */
+
+        @media (max-width: 400px) {
+
+            .main-content {
+                padding-left: 10px;
+
+                padding-right: 10px;
+            }
+
+            .page-title h1 {
+                font-size: 22px;
+            }
+
+            .notification-card {
+                padding: 15px;
+            }
+
+            .notification-icon {
+                width: 38px;
+
+                height: 38px;
+
+                font-size: 18px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<!-- =====================================================
+     SIDEBAR
+===================================================== -->
+
+<aside
+    class="sidebar"
+    id="sidebar"
+>
+
+
+    <!-- BRAND -->
+
+    <div class="brand">
+
+        <div class="brand-name">
+            Campaign<span>Pro</span>
+        </div>
+
+        <div class="brand-subtitle">
+            Smart Campaign Management
+        </div>
+
+    </div>
+
+
+    <!-- MENU TITLE -->
+
+    <div class="menu-title">
+        Main Menu
+    </div>
+
+
+    <!-- MAIN MENU -->
+
+    <ul class="sidebar-menu">
+
+
+        <!-- DASHBOARD -->
+
+        <li>
+
+            <a href="dashboard.html">
+
+                <span class="menu-icon">
+                    🏠
+                </span>
+
+                <span>
+                    Dashboard
+                </span>
+
+            </a>
+
+        </li>
+
+
+        <!-- CREATE CAMPAIGN -->
+
+        <li>
+
+            <a href="campaign.html">
+
+                <span class="menu-icon">
+                    📢
+                </span>
+
+                <span>
+                    Create Campaign
+                </span>
+
+            </a>
+
+        </li>
+
+
+        <!-- DEPOSIT -->
+
+        <li>
+
+            <a href="deposit.html">
+
+                <span class="menu-icon">
+                    💳
+                </span>
+
+                <span>
+                    Deposit
+                </span>
+
+            </a>
+
+        </li>
+
+
+        <!-- MY CAMPAIGNS -->
+
+        <li>
+
+            <a href="campaigns.html">
+
+                <span class="menu-icon">
+                    📊
+                </span>
+
+                <span>
+                    My Campaigns
+                </span>
+
+            </a>
+
+        </li>
+
+
+        <!-- NOTIFICATIONS -->
+
+        <li>
+
+            <a
+                href="notifications.html"
+                class="active"
+            >
+
+                <span class="menu-icon">
+                    🔔
+                </span>
+
+                <span>
+                    Notifications
+                </span>
+
+            </a>
+
+        </li>
+
+
+        <!-- HELP & SUPPORT -->
+
+        <li>
+
+            <a
+                href="help.html"
+                class="help-link"
+            >
+
+                <span class="menu-icon">
+                    ❓
+                </span>
+
+                <span>
+                    Help & Support
+                </span>
+
+            </a>
+
+        </li>
+
+
+    </ul>
+
+
+    <!-- =================================================
+         BOTTOM
+    ================================================= -->
+
+    <div class="sidebar-bottom">
+
+
+        <!-- LOGOUT -->
+
+        <button
+            type="button"
+            class="logout-btn"
+            id="logoutButton"
+        >
+
+            <span class="logout-icon">
+                🚪
+            </span>
+
+            <span>
+                Logout
+            </span>
+
+        </button>
+
+
+    </div>
+
+
+</aside>
+
+
+<!-- =====================================================
+     MOBILE TOPBAR
+===================================================== -->
+
+<div class="mobile-topbar">
+
+    <div class="mobile-brand">
+        Campaign<span>Pro</span>
+    </div>
+
+    <button
+        class="menu-button"
+        id="menuButton"
+        type="button"
+        aria-label="Open Menu"
+    >
+        ☰
+    </button>
+
+</div>
+
+
+<!-- =====================================================
+     SIDEBAR OVERLAY
+===================================================== -->
+
+<div
+    class="sidebar-overlay"
+    id="sidebarOverlay"
+></div>
+
+
+<!-- =====================================================
+     MAIN CONTENT
+===================================================== -->
+
+<main class="main-content">
+
+
+<div class="page">
+
+
+    <!-- PAGE TITLE -->
+
+    <div class="page-title">
+
+        <h1>
+            🔔 Notifications
+        </h1>
+
+        <p>
+            আপনার অ্যাকাউন্টের গুরুত্বপূর্ণ আপডেট এখানে দেখতে পারবেন।
+        </p>
+
+    </div>
+
+
+    <!-- =================================================
+         NOTIFICATION LIST
+    ================================================= -->
+
+    <div id="notificationList">
+
+        <div class="empty" id="emptyState">
+
+            <div class="empty-icon">
+                🔔
+            </div>
+
+            <h3>
+                কোনো নতুন নোটিফিকেশন নেই
+            </h3>
+
+            <p>
+                আপনার অ্যাকাউন্টে নতুন কোনো আপডেট হলে এখানে দেখানো হবে।
+            </p>
+
+        </div>
+
+    </div>
+
+
+</div>
+
+</main>
+
+
+<script>
+
+    /* =====================================================
+       MOBILE SIDEBAR
+    ===================================================== */
+
+    const sidebar =
+        document.getElementById("sidebar");
+
+    const menuButton =
+        document.getElementById("menuButton");
+
+    const sidebarOverlay =
+        document.getElementById("sidebarOverlay");
+
+
+    function openSidebar() {
+
+        sidebar.classList.add("open");
+
+        sidebarOverlay.classList.add("show");
+
+        menuButton.textContent = "✕";
+
+    }
+
+
+    function closeSidebar() {
+
+        sidebar.classList.remove("open");
+
+        sidebarOverlay.classList.remove("show");
+
+        menuButton.textContent = "☰";
+
+    }
+
+
+    menuButton.addEventListener(
+        "click",
+        function() {
+
+            if (
+                sidebar.classList.contains("open")
+            ) {
+
+                closeSidebar();
+
+            } else {
+
+                openSidebar();
+
+            }
+
+        }
+    );
+
+
+    sidebarOverlay.addEventListener(
+        "click",
+        closeSidebar
+    );
+
+
+    /* =====================================================
+       CLOSE SIDEBAR WHEN MENU LINK CLICKED
+    ===================================================== */
+
+    document
+        .querySelectorAll(
+            ".sidebar-menu a, .help-link"
+        )
+        .forEach(
+            function(link) {
+
+                link.addEventListener(
+                    "click",
+                    closeSidebar
+                );
+
+            }
+        );
+
+</script>
+
+
+<!-- =====================================================
+     FIREBASE REALTIME NOTIFICATIONS & LOGOUT
+===================================================== -->
+<script type="module">
+    import { checkAuthStatus, logoutUser, auth, db } from './firebase.js';
+    import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { collection, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    // ১. পেজ লোড হলেই ফায়ারবেজ চেক করবে ইউজার লগইন আছে কি না
+    checkAuthStatus();
+
+    // ২. ফায়ারবেজের লগআউট লজিক
+    const logoutBtn = document.getElementById("logoutButton");
+    if(logoutBtn) {
+        logoutBtn.addEventListener("click", function(e) {
+            e.preventDefault();
+            const confirmed = confirm("আপনি কি Logout করতে চান?");
+            if (confirmed) {
+                logoutUser();
+            }
+        });
+    }
+
+    // ৩. রিয়েল-টাইম নোটিফিকেশন লোড করার লজিক
+    const notificationList = document.getElementById("notificationList");
+
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            // ইউজারের নিজস্ব নোটিফিকেশন কালেকশনে রিয়েল-টাইম লিসেনার যুক্ত করা হলো
+            const q = query(collection(db, "users", user.uid, "notifications"), orderBy("timestamp", "desc"));
+            
+            onSnapshot(q, (snapshot) => {
+                if (snapshot.empty) {
+                    notificationList.innerHTML = `
+                    <div class="empty" id="emptyState">
+                        <div class="empty-icon">🔔</div>
+                        <h3>কোনো নতুন নোটিফিকেশন নেই</h3>
+                        <p>আপনার অ্যাকাউন্টে নতুন কোনো আপডেট হলে এখানে দেখানো হবে।</p>
+                    </div>`;
+                } else {
+                    let htmlContent = "";
+                    snapshot.forEach((doc) => {
+                        const data = doc.data();
+                        
+                        // টাইমস্ট্যাম্প থেকে সুন্দর করে সময় বের করা
+                        let timeString = "Just now";
+                        if (data.timestamp) {
+                            const dateObj = data.timestamp.toDate();
+                            timeString = dateObj.toLocaleString('bn-BD', {
+                                month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
+                            });
+                        }
+                        
+                        // নতুন নোটিফিকেশনের কার্ড তৈরি করা (আপনার অরিজিনাল ডিজাইনেই)
+                        htmlContent += `
+                        <div class="notification-card">
+                            <div class="notification-top">
+                                <div class="notification-icon">
+                                    ${data.icon || '📣'}
+                                </div>
+                                <div class="notification-content">
+                                    <h3>${data.title}</h3>
+                                    <p>${data.message}</p>
+                                    <div class="notification-time">${timeString}</div>
+                                </div>
+                            </div>
+                        </div>`;
+                    });
+                    
+                    // সমস্ত কার্ডগুলো পেজে বসিয়ে দেওয়া
+                    notificationList.innerHTML = htmlContent;
+                }
+            });
+        }
+    });
+</script>
+
+</body>
+
+</html>

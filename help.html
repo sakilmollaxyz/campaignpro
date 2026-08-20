@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html lang="bn">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Help & Support - CampaignPro</title>
+
+    <!-- টেলিগ্রাম ওয়েবের স্ক্রিপ্ট -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family:
+                Arial,
+                "Noto Sans Bengali",
+                "Segoe UI",
+                sans-serif;
+
+            background: #f5f7fb;
+            color: #172033;
+
+            min-height: 100vh;
+        }
+
+
+        /* =====================================================
+           SIDEBAR
+        ===================================================== */
+
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 250px;
+            height: 100vh;
+            background: #111827;
+            color: #ffffff;
+            padding: 22px 15px;
+            overflow-y: auto;
+            z-index: 1000;
+            transition: transform .25s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .brand {
+            padding: 5px 12px 25px;
+            border-bottom: 1px solid #263142;
+            margin-bottom: 20px;
+        }
+
+        .brand-name {
+            font-size: 23px;
+            font-weight: 800;
+            letter-spacing: -.3px;
+        }
+
+        .brand-name span { color: #10b981; }
+
+        .brand-subtitle {
+            color: #94a3b8;
+            font-size: 11px;
+            margin-top: 5px;
+        }
+
+        .menu-title {
+            color: #64748b;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            padding: 0 12px;
+            margin-bottom: 8px;
+            letter-spacing: .5px;
+        }
+
+        .sidebar-menu { list-style: none; }
+        .sidebar-menu li { margin-bottom: 4px; }
+
+        .sidebar-menu a {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+            padding: 11px 12px;
+            color: #cbd5e1;
+            text-decoration: none;
+            border-radius: 9px;
+            font-size: 14px;
+            font-weight: 600;
+            transition: background .2s, color .2s, transform .2s;
+        }
+
+        .sidebar-menu a:hover {
+            background: #1f2937;
+            color: #ffffff;
+            transform: translateX(2px);
+        }
+
+        .sidebar-menu a.active {
+            background: #059669;
+            color: #ffffff;
+            box-shadow: 0 4px 12px rgba(5, 150, 105, .18);
+        }
+
+        .menu-icon {
+            width: 22px;
+            min-width: 22px;
+            text-align: center;
+            font-size: 16px;
+        }
+
+        .sidebar-bottom {
+            margin-top: auto;
+            padding-top: 15px;
+        }
+
+        .help-link {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+            padding: 11px 12px;
+            color: #cbd5e1;
+            text-decoration: none;
+            border-radius: 9px;
+            font-size: 14px;
+            font-weight: 600;
+            transition: background .2s, color .2s, transform .2s;
+        }
+
+        .help-link:hover {
+            background: #1f2937;
+            color: #ffffff;
+            transform: translateX(2px);
+        }
+
+        .help-link.active {
+            background: #059669;
+            color: #ffffff;
+            box-shadow: 0 4px 12px rgba(5, 150, 105, .18);
+        }
+
+        .logout-btn {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 11px;
+            margin-top: 12px;
+            padding: 11px 12px;
+            border: 1px solid rgba(255, 255, 255, .07);
+            border-radius: 9px;
+            background: rgba(255, 255, 255, .035);
+            color: #cbd5e1;
+            font-family: inherit;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, .10);
+            transition: background .2s, color .2s, border-color .2s, transform .2s, box-shadow .2s;
+        }
+
+        .logout-btn:hover {
+            background: rgba(239, 68, 68, .10);
+            color: #fca5a5;
+            border-color: rgba(239, 68, 68, .18);
+            transform: translateY(-1px);
+            box-shadow: 0 5px 14px rgba(0, 0, 0, .15);
+        }
+
+        .logout-icon {
+            width: 22px;
+            min-width: 22px;
+            text-align: center;
+            font-size: 16px;
+        }
+
+
+        /* =====================================================
+           MOBILE TOPBAR
+        ===================================================== */
+
+        .mobile-topbar {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            height: 62px;
+            background: #111827;
+            color: #ffffff;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 16px;
+            z-index: 900;
+            box-shadow: 0 3px 15px rgba(0, 0, 0, .15);
+        }
+
+        .mobile-brand { font-size: 20px; font-weight: 800; }
+        .mobile-brand span { color: #10b981; }
+
+        .menu-button {
+            border: none;
+            background: #1f2937;
+            color: #ffffff;
+            width: 40px; height: 40px;
+            border-radius: 8px;
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: .2s;
+        }
+
+        .menu-button:hover { background: #374151; }
+
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, .45);
+            z-index: 950;
+        }
+
+
+        /* =====================================================
+           MAIN CONTENT
+        ===================================================== */
+
+        .main-content {
+            margin-left: 250px;
+            min-height: 100vh;
+            padding: 30px;
+        }
+
+        .page {
+            width: 100%;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .page-title { margin-bottom: 22px; }
+        .page-title h1 { font-size: 28px; margin-bottom: 7px; line-height: 1.3; }
+        .page-title p { color: #64748b; font-size: 14px; line-height: 1.7; }
+
+        .card {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 30px rgba(15, 23, 42, .06);
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 18px;
+        }
+
+
+        /* =====================================================
+           SUPPORT CHANNELS (GRID) - WHATSAPP & TELEGRAM
+        ===================================================== */
+
+        .support-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 14px;
+            margin-bottom: 8px;
+        }
+
+        .support-channel {
+            border: 2px solid #e2e8f0;
+            border-radius: 13px;
+            padding: 18px;
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: #ffffff;
+            transition: .2s;
+        }
+
+        .support-channel:hover {
+            border-color: #10b981;
+            background: #f0fdf4;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 18px rgba(5, 150, 105, .08);
+        }
+
+        /* Specific Hover for WhatsApp */
+        .support-channel.whatsapp:hover {
+            border-color: #25D366;
+            background: #f0fdf4;
+            box-shadow: 0 6px 18px rgba(37, 211, 102, .15);
+        }
+
+        .channel-icon {
+            width: 46px;
+            height: 46px;
+            border-radius: 12px;
+            background: #ecfdf5;
+            color: #059669;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            flex-shrink: 0;
+        }
+
+        /* WhatsApp Icon Style */
+        .support-channel.whatsapp .channel-icon {
+            background: #eafff1;
+            color: #25D366;
+        }
+
+        .channel-info h3 {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 3px;
+        }
+
+        .channel-info p {
+            font-size: 13px;
+            color: #64748b;
+        }
+
+
+        /* =====================================================
+           FAQ ACCORDION
+        ===================================================== */
+
+        .faq-item {
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            overflow: hidden;
+            transition: .2s;
+        }
+
+        .faq-question {
+            padding: 16px 18px;
+            font-size: 15px;
+            font-weight: 700;
+            background: #ffffff;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            user-select: none;
+        }
+
+        .faq-question:hover { background: #f8fafc; }
+
+        .faq-icon {
+            font-size: 16px;
+            color: #059669;
+            transition: transform .2s;
+        }
+
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height .25s ease, padding .25s ease;
+            background: #f8fafc;
+            color: #475569;
+            font-size: 14px;
+            line-height: 1.6;
+            padding: 0 18px;
+        }
+
+        .faq-item.open .faq-answer {
+            max-height: 160px;
+            padding: 14px 18px 16px;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .faq-item.open .faq-icon {
+            transform: rotate(180deg);
+        }
+
+
+        /* =====================================================
+           FORM
+        ===================================================== */
+
+        .form-group { margin-bottom: 18px; }
+
+        label {
+            display: block;
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 7px;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 13px 14px;
+            border: 1px solid #dbe1ea;
+            border-radius: 9px;
+            background: #ffffff;
+            color: #172033;
+            font-size: 15px;
+            outline: none;
+            transition: .2s;
+            font-family: inherit;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            border-color: #059669;
+            box-shadow: 0 0 0 3px rgba(5, 150, 105, .10);
+        }
+
+        textarea {
+            min-height: 120px;
+            resize: vertical;
+            line-height: 1.6;
+        }
+
+        .submit-btn {
+            width: 100%;
+            border: none;
+            background: #059669;
+            color: #ffffff;
+            border-radius: 9px;
+            padding: 14px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: .2s;
+        }
+
+        .submit-btn:hover:not(:disabled) {
+            background: #047857;
+            transform: translateY(-1px);
+            box-shadow: 0 5px 15px rgba(5, 150, 105, .18);
+        }
+
+        .submit-btn:disabled {
+            opacity: .6;
+            cursor: not-allowed;
+        }
+
+        .message {
+            display: none;
+            padding: 12px 14px;
+            border-radius: 9px;
+            font-size: 13px;
+            line-height: 1.5;
+            margin-bottom: 18px;
+        }
+
+        .message.error {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fecaca;
+        }
+
+        .message.success {
+            background: #dcfce7;
+            color: #166534;
+            border: 1px solid #bbf7d0;
+        }
+
+
+        /* =====================================================
+           MOBILE
+        ===================================================== */
+
+        @media (max-width: 700px) {
+            .sidebar {
+                transform: translateX(-100%);
+                box-shadow: 8px 0 25px rgba(0, 0, 0, .18);
+            }
+            .sidebar.open { transform: translateX(0); }
+            .sidebar-overlay.show { display: block; }
+            .mobile-topbar { display: flex; }
+            .main-content {
+                margin-left: 0;
+                padding: 82px 15px 25px;
+            }
+            .support-grid { grid-template-columns: 1fr; }
+            .card { padding: 18px; border-radius: 13px; }
+            .page-title h1 { font-size: 24px; }
+            .page-title p { font-size: 13px; }
+        }
+
+        @media (max-width: 400px) {
+            .main-content { padding-left: 10px; padding-right: 10px; }
+            .card { padding: 15px; }
+            .page-title h1 { font-size: 22px; }
+            .support-channel { padding: 14px; }
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+<!-- =====================================================
+     SIDEBAR
+===================================================== -->
+<aside class="sidebar" id="sidebar">
+
+    <div class="brand">
+        <div class="brand-name">Campaign<span>Pro</span></div>
+        <div class="brand-subtitle">Smart Campaign Management</div>
+    </div>
+
+    <div class="menu-title">Main Menu</div>
+
+    <ul class="sidebar-menu">
+        <li>
+            <a href="dashboard.html">
+                <span class="menu-icon">🏠</span>
+                <span>Dashboard</span>
+            </a>
+        </li>
+        <li>
+            <a href="campaign.html">
+                <span class="menu-icon">📢</span>
+                <span>Create Campaign</span>
+            </a>
+        </li>
+        <li>
+            <a href="deposit.html">
+                <span class="menu-icon">💳</span>
+                <span>Deposit</span>
+            </a>
+        </li>
+        <li>
+            <a href="campaigns.html">
+                <span class="menu-icon">📊</span>
+                <span>My Campaigns</span>
+            </a>
+        </li>
+        <li>
+            <a href="notifications.html">
+                <span class="menu-icon">🔔</span>
+                <span>Notifications</span>
+            </a>
+        </li>
+        <li>
+            <a href="help.html" class="help-link active">
+                <span class="menu-icon">❓</span>
+                <span>Help & Support</span>
+            </a>
+        </li>
+    </ul>
+
+    <div class="sidebar-bottom">
+        <button type="button" class="logout-btn" id="logoutButton">
+            <span class="logout-icon">🚪</span>
+            <span>Logout</span>
+        </button>
+    </div>
+
+</aside>
+
+<!-- =====================================================
+     MOBILE TOPBAR & OVERLAY
+===================================================== -->
+<div class="mobile-topbar">
+    <div class="mobile-brand">Campaign<span>Pro</span></div>
+    <button class="menu-button" id="menuButton" type="button" aria-label="Open Menu">☰</button>
+</div>
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<!-- =====================================================
+     MAIN CONTENT
+===================================================== -->
+<main class="main-content">
+
+<div class="page">
+
+    <!-- PAGE TITLE -->
+    <div class="page-title">
+        <h1>❓ Help & Support</h1>
+        <p>আপনার যেকোনো সমস্যা বা প্রশ্নের জন্য সরাসরি আমাদের সাপোর্ট টিমের সাথে যোগাযোগ করুন।</p>
+    </div>
+
+    <!-- =================================================
+         DIRECT CONTACT CHANNELS
+    ================================================= -->
+    <div class="card">
+        <div class="card-title">সরাসরি যোগাযোগ করুন</div>
+        <div class="support-grid">
+
+            <!-- TELEGRAM SUPPORT -->
+            <a
+                href="https://t.me/sakil_molla"
+                target="_blank"
+                rel="noopener"
+                class="support-channel telegram"
+            >
+                <div class="channel-icon">✈️</div>
+                <div class="channel-info">
+                    <h3>Telegram Support</h3>
+                    <p>দ্রুত রিপ্লাই পাওয়ার জন্য মেসেজ দিন</p>
+                </div>
+            </a>
+
+            <!-- WHATSAPP SUPPORT -->
+            <a
+                href="https://wa.me/qr/MG5KJJ35PDIIH1" 
+                target="_blank"
+                rel="noopener"
+                class="support-channel whatsapp"
+            >
+                <div class="channel-icon">💬</div>
+                <div class="channel-info">
+                    <h3>WhatsApp Support</h3>
+                    <p>সরাসরি চ্যাট করতে ক্লিক করুন</p>
+                </div>
+            </a>
+
+        </div>
+    </div>
+
+
+    <!-- =================================================
+         SUPPORT TICKET FORM
+    ================================================= -->
+    <div class="card">
+        <div class="card-title">মেসেজ পাঠান</div>
+        <div id="errorMessage" class="message error"></div>
+        <div id="successMessage" class="message success"></div>
+
+        <form id="supportForm">
+            <!-- SUBJECT -->
+            <div class="form-group">
+                <label for="supportSubject">বিষয় / সমস্যা ক্যাটাগরি</label>
+                <select id="supportSubject" required>
+                    <option value="">নির্বাচন করুন</option>
+                    <option value="deposit">Deposit সংক্রান্ত সমস্যা</option>
+                    <option value="campaign">Campaign রানিং বা বাজেট সংক্রান্ত</option>
+                    <option value="account">অ্যাকাউন্ট সমস্যা</option>
+                    <option value="other">অন্যান্য</option>
+                </select>
+            </div>
+
+            <!-- MESSAGE -->
+            <div class="form-group">
+                <label for="supportMessage">আপনার সমস্যা বিস্তারিত লিখুন</label>
+                <textarea
+                    id="supportMessage"
+                    placeholder="আপনার প্রশ্ন বা সমস্যার বিবরণ এখানে লিখুন..."
+                    required
+                ></textarea>
+            </div>
+
+            <!-- SUBMIT -->
+            <button type="submit" class="submit-btn" id="submitButton">
+                মেসেজ পাঠান
+            </button>
+        </form>
+    </div>
+
+
+    <!-- =================================================
+         FAQ SECTION
+    ================================================= -->
+    <div class="card">
+        <div class="card-title">সচরাচর জিজ্ঞাসিত প্রশ্ন (FAQ)</div>
+
+        <div class="faq-item">
+            <div class="faq-question">
+                <span>কীভাবে ব্যালেন্স ডিপোজিট করব?</span>
+                <span class="faq-icon">▼</span>
+            </div>
+            <div class="faq-answer">
+                ডিপোজিট পেজে গিয়ে আপনার পছন্দের পেমেন্ট মেথড সিলেক্ট করুন, প্রদত্ত নাম্বারে টাকা পাঠিয়ে Transaction ID সাবমিট করুন। সর্বোচ্চ ২৪ ঘণ্টার মধ্যে ব্যালেন্স অ্যাড হয়ে যাবে।
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <div class="faq-question">
+                <span>ক্যাম্পেইন তৈরি করার পর কখন লাইভ হবে?</span>
+                <span class="faq-icon">▼</span>
+            </div>
+            <div class="faq-answer">
+                ক্যাম্পেইন সাবমিট করার পর আমাদের সিস্টেম সেটি যাচাই করে খুব দ্রুত অ্যাপ্রুভ করে দেয়। সাধারণ ক্ষেত্রে ৩০ মিনিট থেকে ১ ঘণ্টার মধ্যে ক্যাম্পেইন একটিভ হয়ে যায়।
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <div class="faq-question">
+                <span>টাকা ডিপোজিট করতে সমস্যা হলে কী করব?</span>
+                <span class="faq-icon">▼</span>
+            </div>
+            <div class="faq-answer">
+                যদি ২৪ ঘণ্টার মধ্যে ডিপোজিট ব্যালেন্স যুক্ত না হয়, তবে পেমেন্টের স্ক্রিনশট ও Transaction ID সহ উপরের টেলিগ্রাম বা হোয়াটসঅ্যাপ সাপোর্টে মেসেজ দিন।
+            </div>
+        </div>
+    </div>
+
+</div>
+
+</main>
+
+<script>
+    /* =====================================================
+       MOBILE SIDEBAR LOGIC
+    ===================================================== */
+    const sidebar = document.getElementById("sidebar");
+    const menuButton = document.getElementById("menuButton");
+    const sidebarOverlay = document.getElementById("sidebarOverlay");
+    const logoutButton = document.getElementById("logoutButton");
+
+    function openSidebar() {
+        sidebar.classList.add("open");
+        sidebarOverlay.classList.add("show");
+        menuButton.textContent = "✕";
+    }
+
+    function closeSidebar() {
+        sidebar.classList.remove("open");
+        sidebarOverlay.classList.remove("show");
+        menuButton.textContent = "☰";
+    }
+
+    menuButton.addEventListener("click", function() {
+        if (sidebar.classList.contains("open")) {
+            closeSidebar();
+        } else {
+            openSidebar();
+        }
+    });
+
+    sidebarOverlay.addEventListener("click", closeSidebar);
+
+    document.querySelectorAll(".sidebar-menu a, .help-link").forEach(function(link) {
+        link.addEventListener("click", closeSidebar);
+    });
+
+    /* =====================================================
+       FAQ ACCORDION TOGGLE
+    ===================================================== */
+    document.querySelectorAll(".faq-question").forEach(function(item) {
+        item.addEventListener("click", function() {
+            const parent = item.parentElement;
+            parent.classList.toggle("open");
+        });
+    });
+
+    /* =====================================================
+       SUPPORT FORM SUBMIT
+    ===================================================== */
+    const supportForm = document.getElementById("supportForm");
+    const submitButton = document.getElementById("submitButton");
+    const errorMessage = document.getElementById("errorMessage");
+    const successMessage = document.getElementById("successMessage");
+
+    supportForm.addEventListener("submit", function(event) {
+        event.preventDefault();
+        
+        errorMessage.style.display = "none";
+        successMessage.style.display = "none";
+        
+        const subject = document.getElementById("supportSubject").value;
+        const message = document.getElementById("supportMessage").value.trim();
+
+        if (!subject || !message) {
+            errorMessage.textContent = "সবগুলো ফিল্ড সঠিকভাবে পূরণ করুন।";
+            errorMessage.style.display = "block";
+            return;
+        }
+
+        submitButton.disabled = true;
+        submitButton.textContent = "পাঠানো হচ্ছে...";
+
+        setTimeout(function() {
+            successMessage.textContent = "আপনার মেসেজটি সফলভাবে পাঠানো হয়েছে। দ্রুত রিপ্লাই দেওয়া হবে।";
+            successMessage.style.display = "block";
+            submitButton.disabled = false;
+            submitButton.textContent = "মেসেজ পাঠান";
+            supportForm.reset();
+        }, 700);
+    });
+</script>
+
+<!-- =====================================================
+     FIREBASE LOGOUT LOGIC (NEW)
+===================================================== -->
+<script type="module">
+    import { checkAuthStatus, logoutUser } from './firebase.js';
+
+    // ১. পেজ লোড হলেই ফায়ারবেজ চেক করবে ইউজার লগইন আছে কি না
+    checkAuthStatus();
+
+    // ২. ফায়ারবেজের লগআউট লজিক
+    const fbLogoutBtn = document.getElementById("logoutButton");
+    if(fbLogoutBtn) {
+        // পুরনো লগআউট ইভেন্ট মুছে নতুনটা বসানো হলো
+        fbLogoutBtn.onclick = function(e) {
+            e.preventDefault();
+            const confirmed = confirm("আপনি কি Logout করতে চান?");
+            if (confirmed) {
+                logoutUser();
+            }
+        };
+    }
+</script>
+
+</body>
+</html>

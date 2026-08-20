@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="bn">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - CampaignPro</title>
+    
+    <!-- টেলিগ্রাম ওয়েবের স্ক্রিপ্ট -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: Arial, "Noto Sans Bengali", "Segoe UI", sans-serif;
+            background: #f5f7fb; color: #172033; min-height: 100vh;
+        }
+
+        /* =====================================================
+           SIDEBAR
+        ===================================================== */
+        .sidebar {
+            position: fixed; top: 0; left: 0; width: 250px; height: 100vh;
+            background: #111827; color: #ffffff; padding: 22px 15px;
+            overflow-y: auto; z-index: 1000; transition: transform .25s ease;
+            display: flex; flex-direction: column;
+        }
+        .brand {
+            padding: 5px 12px 25px; border-bottom: 1px solid #263142; margin-bottom: 20px;
+        }
+        .brand-name { font-size: 23px; font-weight: 800; letter-spacing: -.3px; }
+        .brand-name span { color: #10b981; }
+        .brand-subtitle { color: #94a3b8; font-size: 11px; margin-top: 5px; }
+        
+        .menu-title {
+            color: #64748b; font-size: 11px; font-weight: 700; text-transform: uppercase;
+            padding: 0 12px; margin-bottom: 8px; letter-spacing: .5px;
+        }
+        .sidebar-menu { list-style: none; }
+        .sidebar-menu li { margin-bottom: 4px; }
+        .sidebar-menu a {
+            display: flex; align-items: center; gap: 11px; padding: 11px 12px;
+            color: #cbd5e1; text-decoration: none; border-radius: 9px;
+            font-size: 14px; font-weight: 600; transition: background .2s, color .2s, transform .2s;
+        }
+        .sidebar-menu a:hover { background: #1f2937; color: #ffffff; transform: translateX(2px); }
+        .sidebar-menu a.active {
+            background: #059669; color: #ffffff; box-shadow: 0 4px 12px rgba(5, 150, 105, .18);
+        }
+        .menu-icon { width: 22px; min-width: 22px; text-align: center; font-size: 16px; }
+        .sidebar-bottom { margin-top: auto; padding-top: 15px; }
+        .help-link {
+            display: flex; align-items: center; gap: 11px; padding: 11px 12px;
+            color: #cbd5e1; text-decoration: none; border-radius: 9px;
+            font-size: 14px; font-weight: 600; transition: background .2s, color .2s, transform .2s;
+        }
+        .help-link:hover { background: #1f2937; color: #ffffff; transform: translateX(2px); }
+        
+        /* LOGOUT BUTTON */
+        .logout-button {
+            display: flex; align-items: center; justify-content: center; gap: 9px;
+            width: 100%; margin-top: 10px; padding: 11px 13px; border-radius: 9px;
+            color: #cbd5e1; background: rgba(255, 255, 255, .035);
+            border: 1px solid rgba(255, 255, 255, .07); box-shadow: 0 3px 10px rgba(0, 0, 0, .10);
+            font-size: 14px; font-weight: 600; cursor: pointer;
+            transition: background .2s, color .2s, border-color .2s, transform .2s, box-shadow .2s;
+        }
+        .logout-button:hover {
+            background: rgba(239, 68, 68, .12); color: #fca5a5;
+            border-color: rgba(239, 68, 68, .20); transform: translateY(-1px);
+            box-shadow: 0 5px 14px rgba(0, 0, 0, .16);
+        }
+        .logout-icon { font-size: 16px; line-height: 1; }
+
+        /* =====================================================
+           MOBILE TOPBAR & OVERLAY
+        ===================================================== */
+        .mobile-topbar {
+            display: none; position: fixed; top: 0; left: 0; right: 0; height: 62px;
+            background: #111827; color: #ffffff; align-items: center;
+            justify-content: space-between; padding: 0 16px; z-index: 900;
+            box-shadow: 0 3px 15px rgba(0, 0, 0, .15);
+        }
+        .mobile-brand { font-size: 20px; font-weight: 800; }
+        .mobile-brand span { color: #10b981; }
+        .menu-button {
+            border: none; background: #1f2937; color: #ffffff; width: 40px; height: 40px;
+            border-radius: 8px; font-size: 20px; cursor: pointer; display: flex;
+            align-items: center; justify-content: center; transition: .2s;
+        }
+        .menu-button:hover { background: #374151; }
+        .sidebar-overlay {
+            display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, .45); z-index: 950;
+        }
+
+        /* =====================================================
+           MAIN CONTENT
+        ===================================================== */
+        .main-content { margin-left: 250px; min-height: 100vh; padding: 30px; }
+        .page { width: 100%; max-width: 1250px; margin: 0 auto; }
+        .page-title { margin-bottom: 25px; }
+        .page-title h1 { font-size: 28px; margin-bottom: 7px; line-height: 1.3; }
+        .page-title p { color: #64748b; font-size: 14px; line-height: 1.7; }
+
+        /* =====================================================
+           STAT GRID
+        ===================================================== */
+        .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 25px; }
+        .stat-card {
+            background: #ffffff; border: 1px solid #e8edf3; border-radius: 14px;
+            padding: 20px; box-shadow: 0 5px 20px rgba(15, 23, 42, .04);
+        }
+        .stat-label { color: #64748b; font-size: 13px; margin-bottom: 12px; }
+        .stat-value { font-size: 27px; font-weight: 800; }
+        .balance { color: #059669; }
+        .active { color: #2563eb; }
+        .pending { color: #d97706; }
+        .total { color: #7c3aed; }
+
+        /* =====================================================
+           SECTION & ACTIONS
+        ===================================================== */
+        .section {
+            background: #ffffff; border: 1px solid #e8edf3; border-radius: 14px;
+            margin-bottom: 20px; overflow: hidden;
+        }
+        .section-header {
+            padding: 18px 20px; border-bottom: 1px solid #edf0f4;
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .section-header h2 { font-size: 17px; }
+        .view-all { color: #059669; font-size: 13px; text-decoration: none; font-weight: 600; }
+        .view-all:hover { color: #047857; }
+        
+        .quick-actions { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; padding: 20px; }
+        .action {
+            text-decoration: none; border: 1px solid #e5e7eb; border-radius: 11px;
+            padding: 17px; color: #172033; transition: .2s;
+        }
+        .action:hover { border-color: #10b981; background: #f0fdf4; transform: translateY(-1px); }
+        .action-icon { font-size: 23px; margin-bottom: 9px; }
+        .action h3 { font-size: 14px; margin-bottom: 5px; }
+        .action p { color: #64748b; font-size: 12px; line-height: 1.5; }
+
+        /* =====================================================
+           EMPTY STATE
+        ===================================================== */
+        .campaign-list { padding: 5px 20px; }
+        .empty { padding: 35px 20px; text-align: center; color: #64748b; }
+        .empty-icon { font-size: 35px; margin-bottom: 10px; }
+        .empty p { font-size: 13px; }
+
+        /* =====================================================
+           RESPONSIVE
+        ===================================================== */
+        @media (max-width: 1000px) { .stats { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 700px) {
+            .sidebar { transform: translateX(-100%); box-shadow: 8px 0 25px rgba(0, 0, 0, .18); }
+            .sidebar.open { transform: translateX(0); }
+            .sidebar-overlay.show { display: block; }
+            .mobile-topbar { display: flex; }
+            .main-content { margin-left: 0; padding: 82px 15px 25px; }
+            .stats { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+            .stat-card { padding: 15px; }
+            .stat-value { font-size: 22px; }
+            .quick-actions { grid-template-columns: 1fr; padding: 15px; }
+            .page-title h1 { font-size: 24px; }
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+    <div class="brand">
+        <div class="brand-name">Campaign<span>Pro</span></div>
+        <div class="brand-subtitle">Smart Campaign Management</div>
+    </div>
+    <div class="menu-title">Main Menu</div>
+    <ul class="sidebar-menu">
+        <li><a href="dashboard.html" class="active"><span class="menu-icon">🏠</span><span>Dashboard</span></a></li>
+        <li><a href="campaign.html"><span class="menu-icon">📢</span><span>Create Campaign</span></a></li>
+        <li><a href="deposit.html"><span class="menu-icon">💳</span><span>Deposit</span></a></li>
+        <li><a href="campaigns.html"><span class="menu-icon">📊</span><span>My Campaigns</span></a></li>
+        <li><a href="notifications.html"><span class="menu-icon">🔔</span><span>Notifications</span></a></li>
+        <li><a href="help.html" class="help-link"><span class="menu-icon">❓</span><span>Help & Support</span></a></li>
+    </ul>
+    
+    <div class="sidebar-bottom">
+        <!-- LOGOUT BUTTON (FIXED) -->
+        <button type="button" class="logout-button" id="logoutButton">
+            <span class="logout-icon">🚪</span>
+            <span>Logout</span>
+        </button>
+    </div>
+</aside>
+
+<!-- MOBILE TOPBAR & OVERLAY -->
+<div class="mobile-topbar">
+    <div class="mobile-brand">Campaign<span>Pro</span></div>
+    <button class="menu-button" id="menuButton" type="button">☰</button>
+</div>
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<!-- MAIN CONTENT -->
+<main class="main-content">
+<div class="page">
+
+    <div class="page-title">
+        <h1 id="welcomeText">Welcome back 👋</h1>
+        <p>আপনার CampaignPro account-এর কার্যক্রম এক নজরে দেখুন।</p>
+    </div>
+
+    <!-- STATS -->
+    <div class="stats">
+        <div class="stat-card">
+            <div class="stat-label">Available Balance</div>
+            <div class="stat-value balance" id="balance">৳0.00</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">Active Campaign</div>
+            <div class="stat-value active" id="activeCampaign">0</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">Pending Campaign</div>
+            <div class="stat-value pending" id="pendingCampaign">0</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">Total Campaign</div>
+            <div class="stat-value total" id="totalCampaign">0</div>
+        </div>
+    </div>
+
+    <!-- QUICK ACTIONS -->
+    <section class="section">
+        <div class="section-header"><h2>Quick Actions</h2></div>
+        <div class="quick-actions">
+            <a href="campaign.html" class="action">
+                <div class="action-icon">🚀</div>
+                <h3>নতুন Campaign তৈরি করুন</h3>
+                <p>আপনার বিজ্ঞাপনের জন্য নতুন Campaign শুরু করুন।</p>
+            </a>
+            <a href="deposit.html" class="action">
+                <div class="action-icon">💳</div>
+                <h3>Balance Deposit করুন</h3>
+                <p>Campaign চালানোর জন্য account balance যোগ করুন।</p>
+            </a>
+            <a href="notifications.html" class="action">
+                <div class="action-icon">🔔</div>
+                <h3>Notifications দেখুন</h3>
+                <p>আপনার account-এর সর্বশেষ আপডেট দেখুন।</p>
+            </a>
+        </div>
+    </section>
+
+    <!-- RECENT CAMPAIGNS -->
+    <section class="section">
+        <div class="section-header">
+            <h2>Recent Campaigns</h2>
+            <a href="campaign.html" class="view-all">New Campaign</a>
+        </div>
+        <div class="campaign-list" id="campaignList">
+            <div class="empty">
+                <div class="empty-icon">📊</div>
+                <p>এখনো কোনো Campaign তৈরি করা হয়নি।</p>
+            </div>
+        </div>
+    </section>
+
+</div>
+</main>
+
+<script>
+    /* SIDEBAR LOGIC */
+    const sidebar = document.getElementById("sidebar");
+    const menuButton = document.getElementById("menuButton");
+    const sidebarOverlay = document.getElementById("sidebarOverlay");
+
+    function openSidebar() { sidebar.classList.add("open"); sidebarOverlay.classList.add("show"); menuButton.textContent = "✕"; }
+    function closeSidebar() { sidebar.classList.remove("open"); sidebarOverlay.classList.remove("show"); menuButton.textContent = "☰"; }
+    menuButton.addEventListener("click", () => sidebar.classList.contains("open") ? closeSidebar() : openSidebar());
+    sidebarOverlay.addEventListener("click", closeSidebar);
+    document.querySelectorAll(".sidebar-menu a").forEach(link => link.addEventListener("click", closeSidebar));
+</script>
+
+<!-- FIREBASE INTEGRATION -->
+<script type="module">
+    import { checkAuthStatus, logoutUser, auth, db } from './firebase.js';
+    import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    // পেজ লোড হলে চেক করবে ইউজার লগইন আছে কি না
+    checkAuthStatus();
+
+    // ইউজারের ডেটা লোড করার লজিক
+    onAuthStateChanged(auth, async (user) => {
+        if (user) {
+            try {
+                // ফায়ারস্টোর থেকে ইউজারের ডেটা আনা হচ্ছে
+                const userDoc = await getDoc(doc(db, "users", user.uid));
+                if (userDoc.exists()) {
+                    const userData = userDoc.data();
+                    
+                    // নাম আপডেট করা
+                    document.getElementById("welcomeText").innerText = `Welcome back, ${userData.name} 👋`;
+                    
+                    // ব্যালেন্স আপডেট করা
+                    document.getElementById("balance").innerText = `৳${userData.balance.toFixed(2)}`;
+                }
+            } catch (error) {
+                console.error("ডেটা লোড করতে সমস্যা হয়েছে:", error);
+            }
+        }
+    });
+
+    // ফায়ারবেজের লগআউট লজিক
+    const logoutBtn = document.getElementById("logoutButton");
+    if(logoutBtn) {
+        logoutBtn.addEventListener("click", function(e) {
+            e.preventDefault();
+            const confirmed = confirm("আপনি কি Logout করতে চান?");
+            if (confirmed) {
+                logoutUser();
+            }
+        });
+    }
+</script>
+
+</body>
+</html>

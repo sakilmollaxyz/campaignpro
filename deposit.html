@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="bn">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deposit - CampaignPro</title>
+
+    <!-- টেলিগ্রাম ওয়েবের স্ক্রিপ্ট -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: Arial, "Noto Sans Bengali", "Segoe UI", sans-serif;
+            background: #f5f7fb; color: #172033; min-height: 100vh;
+        }
+
+        /* =====================================================
+           SIDEBAR
+        ===================================================== */
+        .sidebar {
+            position: fixed; top: 0; left: 0; width: 250px; height: 100vh;
+            background: #111827; color: #ffffff; padding: 22px 15px;
+            overflow-y: auto; z-index: 1000; transition: transform .25s ease;
+            display: flex; flex-direction: column;
+        }
+        .brand {
+            padding: 5px 12px 25px; border-bottom: 1px solid #263142; margin-bottom: 20px;
+        }
+        .brand-name { font-size: 23px; font-weight: 800; letter-spacing: -.3px; }
+        .brand-name span { color: #10b981; }
+        .brand-subtitle { color: #94a3b8; font-size: 11px; margin-top: 5px; }
+        .menu-title {
+            color: #64748b; font-size: 11px; font-weight: 700; text-transform: uppercase;
+            padding: 0 12px; margin-bottom: 8px; letter-spacing: .5px;
+        }
+        .sidebar-menu { list-style: none; }
+        .sidebar-menu li { margin-bottom: 4px; }
+        .sidebar-menu a {
+            display: flex; align-items: center; gap: 11px; padding: 11px 12px;
+            color: #cbd5e1; text-decoration: none; border-radius: 9px;
+            font-size: 14px; font-weight: 600; transition: background .2s, color .2s, transform .2s;
+        }
+        .sidebar-menu a:hover { background: #1f2937; color: #ffffff; transform: translateX(2px); }
+        .sidebar-menu a.active {
+            background: #059669; color: #ffffff; box-shadow: 0 4px 12px rgba(5, 150, 105, .18);
+        }
+        .menu-icon { width: 22px; min-width: 22px; text-align: center; font-size: 16px; }
+        .sidebar-bottom { margin-top: auto; padding-top: 15px; }
+        .help-link {
+            display: flex; align-items: center; gap: 11px; padding: 11px 12px;
+            color: #cbd5e1; text-decoration: none; border-radius: 9px;
+            font-size: 14px; font-weight: 600; transition: background .2s, color .2s, transform .2s;
+        }
+        .help-link:hover { background: #1f2937; color: #ffffff; transform: translateX(2px); }
+        
+        .logout-btn {
+            width: 100%; display: flex; align-items: center; justify-content: flex-start;
+            gap: 11px; margin-top: 12px; padding: 11px 12px;
+            border: 1px solid rgba(255, 255, 255, .07); border-radius: 9px;
+            background: rgba(255, 255, 255, .035); color: #cbd5e1;
+            font-family: inherit; font-size: 14px; font-weight: 600; cursor: pointer;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, .10);
+            transition: background .2s, color .2s, border-color .2s, transform .2s, box-shadow .2s;
+        }
+        .logout-btn:hover {
+            background: rgba(239, 68, 68, .10); color: #fca5a5;
+            border-color: rgba(239, 68, 68, .18); transform: translateY(-1px);
+            box-shadow: 0 5px 14px rgba(0, 0, 0, .15);
+        }
+        .logout-icon { width: 22px; min-width: 22px; text-align: center; font-size: 16px; }
+
+        /* =====================================================
+           MOBILE TOPBAR
+        ===================================================== */
+        .mobile-topbar {
+            display: none; position: fixed; top: 0; left: 0; right: 0; height: 62px;
+            background: #111827; color: #ffffff; align-items: center;
+            justify-content: space-between; padding: 0 16px; z-index: 900;
+            box-shadow: 0 3px 15px rgba(0, 0, 0, .15);
+        }
+        .mobile-brand { font-size: 20px; font-weight: 800; }
+        .mobile-brand span { color: #10b981; }
+        .menu-button {
+            border: none; background: #1f2937; color: #ffffff; width: 40px; height: 40px;
+            border-radius: 8px; font-size: 20px; cursor: pointer; display: flex;
+            align-items: center; justify-content: center; transition: .2s;
+        }
+        .menu-button:hover { background: #374151; }
+        .sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, .45); z-index: 950; }
+
+        /* =====================================================
+           MAIN CONTENT
+        ===================================================== */
+        .main-content { margin-left: 250px; min-height: 100vh; padding: 30px; }
+        .page { width: 100%; max-width: 900px; margin: 0 auto; }
+        .page-title { margin-bottom: 22px; }
+        .page-title h1 { font-size: 28px; margin-bottom: 7px; line-height: 1.3; }
+        .page-title p { color: #64748b; font-size: 14px; line-height: 1.7; }
+        .card { background: #ffffff; border-radius: 16px; padding: 24px; margin-bottom: 20px; box-shadow: 0 8px 30px rgba(15, 23, 42, .06); }
+        .card-title { font-size: 18px; font-weight: 700; margin-bottom: 18px; }
+
+        /* =====================================================
+           PAYMENT METHOD
+        ===================================================== */
+        .payment-method {
+            border: 2px solid #e2e8f0; border-radius: 13px; padding: 16px 18px;
+            margin-bottom: 12px; cursor: pointer; transition: .2s; background: #ffffff;
+            display: flex; align-items: center; justify-content: space-between; gap: 15px;
+        }
+        .payment-method:hover { border-color: #10b981; background: #f0fdf4; transform: translateY(-1px); box-shadow: 0 4px 14px rgba(5, 150, 105, .08); }
+        .payment-method.active { border-color: #059669; background: #ecfdf5; box-shadow: 0 4px 14px rgba(5, 150, 105, .12); }
+        .method-info-box { display: flex; flex-direction: column; gap: 4px; }
+        .method-name { font-size: 16px; font-weight: 700; color: #172033; }
+        .account-number { font-size: 14px; color: #475569; font-weight: 600; word-break: break-all; }
+        
+        /* COPY BUTTON UPDATED (Light Shadow, No Green Bg) */
+        .copy-btn {
+            border: 1px solid #e2e8f0; background: #ffffff; color: #475569;
+            border-radius: 8px; padding: 8px 14px; font-size: 13px; font-weight: 700;
+            cursor: pointer; white-space: nowrap; display: flex; align-items: center; gap: 6px;
+            transition: .2s; flex-shrink: 0; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+        }
+        .copy-btn:hover {
+            background: #f8fafc; color: #172033; border-color: #cbd5e1;
+            transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        /* =====================================================
+           FORM
+        ===================================================== */
+        .form-group { margin-bottom: 18px; }
+        label { display: block; font-size: 14px; font-weight: 700; margin-bottom: 7px; }
+        input, select { width: 100%; padding: 13px 14px; border: 1px solid #dbe1ea; border-radius: 9px; background: #ffffff; color: #172033; font-size: 15px; outline: none; transition: .2s; }
+        input:focus, select:focus { border-color: #059669; box-shadow: 0 0 0 3px rgba(5, 150, 105, .10); }
+        .amount-wrapper { position: relative; }
+        .currency { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); font-size: 13px; font-weight: 700; color: #059669; pointer-events: none; }
+        .amount-input { padding-right: 55px; }
+        .minimum { margin-top: 6px; color: #64748b; font-size: 13px; }
+        .payment-info { background: #f8fafc; border-radius: 10px; padding: 13px 16px; margin-bottom: 18px; color: #475569; font-size: 13.5px; line-height: 1.6; border: 1px solid #e2e8f0; }
+        .submit-btn { width: 100%; border: none; background: #059669; color: #ffffff; border-radius: 9px; padding: 14px; font-size: 15px; font-weight: 700; cursor: pointer; transition: .2s; }
+        .submit-btn:hover:not(:disabled) { background: #047857; transform: translateY(-1px); box-shadow: 0 5px 15px rgba(5, 150, 105, .18); }
+        .submit-btn:disabled { opacity: .6; cursor: not-allowed; }
+        .message { display: none; padding: 12px 14px; border-radius: 9px; font-size: 13px; line-height: 1.5; margin-bottom: 18px; }
+        .message.error { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
+        .message.success { background: #dcfce7; color: #166534; border: 1px solid #bbf7d0; }
+
+        /* =====================================================
+           MOBILE
+        ===================================================== */
+        @media (max-width: 700px) {
+            .sidebar { transform: translateX(-100%); box-shadow: 8px 0 25px rgba(0, 0, 0, .18); }
+            .sidebar.open { transform: translateX(0); }
+            .sidebar-overlay.show { display: block; }
+            .mobile-topbar { display: flex; }
+            .main-content { margin-left: 0; padding: 82px 15px 25px; }
+            .card { padding: 18px; border-radius: 13px; }
+            .page-title h1 { font-size: 24px; }
+            .page-title p { font-size: 13px; }
+        }
+        @media (max-width: 400px) {
+            .main-content { padding-left: 10px; padding-right: 10px; }
+            .card { padding: 15px; }
+            .page-title h1 { font-size: 22px; }
+            .payment-method { padding: 14px; }
+            .copy-btn { padding: 6px 10px; font-size: 12px; }
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+    <div class="brand">
+        <div class="brand-name">Campaign<span>Pro</span></div>
+        <div class="brand-subtitle">Smart Campaign Management</div>
+    </div>
+    <div class="menu-title">Main Menu</div>
+    <ul class="sidebar-menu">
+        <li><a href="dashboard.html"><span class="menu-icon">🏠</span><span>Dashboard</span></a></li>
+        <li><a href="campaign.html"><span class="menu-icon">📢</span><span>Create Campaign</span></a></li>
+        <li><a href="deposit.html" class="active"><span class="menu-icon">💳</span><span>Deposit</span></a></li>
+        <li><a href="campaigns.html"><span class="menu-icon">📊</span><span>My Campaigns</span></a></li>
+        <li><a href="notifications.html"><span class="menu-icon">🔔</span><span>Notifications</span></a></li>
+        <li><a href="help.html" class="help-link"><span class="menu-icon">❓</span><span>Help & Support</span></a></li>
+    </ul>
+    
+    <div class="sidebar-bottom">
+        <button type="button" class="logout-btn" id="logoutButton">
+            <span class="logout-icon">🚪</span>
+            <span>Logout</span>
+        </button>
+    </div>
+</aside>
+
+<!-- MOBILE TOPBAR & OVERLAY -->
+<div class="mobile-topbar">
+    <div class="mobile-brand">Campaign<span>Pro</span></div>
+    <button class="menu-button" id="menuButton" type="button">☰</button>
+</div>
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<!-- MAIN CONTENT -->
+<main class="main-content">
+<div class="page">
+    <div class="page-title">
+        <h1>Balance Deposit</h1>
+        <p>আপনার Campaign চালানোর জন্য Balance যোগ করুন।</p>
+    </div>
+
+    <!-- MESSAGES -->
+    <div id="errorMessage" class="message error"></div>
+    <div id="successMessage" class="message success"></div>
+
+    <!-- PAYMENT ACCOUNTS (IDs added for Firebase Fetch) -->
+    <div class="card">
+        <div class="card-title">Payment Method নির্বাচন করুন</div>
+        <div class="payment-method" data-method="bkash">
+            <div class="method-info-box">
+                <div class="method-name">bKash (Personal)</div>
+                <div class="account-number" id="bkashText">Loading...</div>
+            </div>
+            <button type="button" class="copy-btn" id="copyBkashBtn" data-copy="">📋 Copy</button>
+        </div>
+        <div class="payment-method" data-method="nagad">
+            <div class="method-info-box">
+                <div class="method-name">Nagad (Personal)</div>
+                <div class="account-number" id="nagadText">Loading...</div>
+            </div>
+            <button type="button" class="copy-btn" id="copyNagadBtn" data-copy="">📋 Copy</button>
+        </div>
+        <div class="payment-method" data-method="binance">
+            <div class="method-info-box">
+                <div class="method-name">Binance Pay ID</div>
+                <div class="account-number" id="binanceText">Loading...</div>
+            </div>
+            <button type="button" class="copy-btn" id="copyBinanceBtn" data-copy="">📋 Copy</button>
+        </div>
+    </div>
+
+    <!-- DEPOSIT FORM -->
+    <div class="card">
+        <div class="card-title">Deposit Information</div>
+        <form id="depositForm">
+            <div class="form-group">
+                <label for="paymentMethod">Selected Payment Method</label>
+                <select id="paymentMethod" required>
+                    <option value="">Select Payment Method</option>
+                    <option value="bkash">bKash</option>
+                    <option value="nagad">Nagad</option>
+                    <option value="binance">Binance</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="amount">Deposit Amount</label>
+                <div class="amount-wrapper">
+                    <input type="number" id="amount" class="amount-input" placeholder="Minimum 100" min="100" step="0.01" required>
+                    <span class="currency" id="currency">BDT</span>
+                </div>
+                <div class="minimum" id="minimumText">Minimum deposit: ৳100</div>
+            </div>
+            <div class="form-group">
+                <label for="transactionId">Transaction ID</label>
+                <input type="text" id="transactionId" placeholder="আপনার Transaction ID লিখুন" required>
+            </div>
+            <div class="payment-info">💡 সঠিক Transaction ID দিন কিছু সময় অপেক্ষা করুন আমাদের টিম ভেরিফাই করে ব্যালেন্স এ্যাড করে দেবে</div>
+            <button type="submit" class="submit-btn" id="submitButton">Deposit Request Submit করুন</button>
+        </form>
+    </div>
+</div>
+</main>
+
+<script>
+    /* =====================================================
+       MOBILE SIDEBAR & UI LOGIC
+    ===================================================== */
+    const sidebar = document.getElementById("sidebar");
+    const menuButton = document.getElementById("menuButton");
+    const sidebarOverlay = document.getElementById("sidebarOverlay");
+
+    function openSidebar() { sidebar.classList.add("open"); sidebarOverlay.classList.add("show"); menuButton.textContent = "✕"; }
+    function closeSidebar() { sidebar.classList.remove("open"); sidebarOverlay.classList.remove("show"); menuButton.textContent = "☰"; }
+    menuButton.addEventListener("click", () => sidebar.classList.contains("open") ? closeSidebar() : openSidebar());
+    sidebarOverlay.addEventListener("click", closeSidebar);
+    document.querySelectorAll(".sidebar-menu a, .help-link").forEach(link => link.addEventListener("click", closeSidebar));
+
+    /* PAYMENT ELEMENTS */
+    const paymentMethod = document.getElementById("paymentMethod");
+    const amount = document.getElementById("amount");
+    const currency = document.getElementById("currency");
+    const minimumText = document.getElementById("minimumText");
+    const paymentCards = document.querySelectorAll(".payment-method");
+
+    // UI functions exported to global scope so Module can use them
+    window.hideMessages = function() { document.getElementById("errorMessage").style.display = "none"; document.getElementById("successMessage").style.display = "none"; }
+    window.showError = function(message) { const err = document.getElementById("errorMessage"); err.textContent = message; err.style.display = "block"; document.getElementById("successMessage").style.display = "none"; err.scrollIntoView({ behavior: "smooth", block: "nearest" }); }
+    window.showSuccess = function(message) { const succ = document.getElementById("successMessage"); succ.textContent = message; succ.style.display = "block"; document.getElementById("errorMessage").style.display = "none"; succ.scrollIntoView({ behavior: "smooth", block: "nearest" }); }
+
+    paymentMethod.addEventListener("change", function() {
+        window.hideMessages();
+        const method = paymentMethod.value;
+        paymentCards.forEach(card => card.classList.remove("active"));
+        
+        if (!method) {
+            currency.textContent = "BDT"; amount.min = "100"; amount.placeholder = "Minimum 100"; minimumText.textContent = "Minimum deposit: ৳100";
+            return;
+        }
+
+        const selectedCard = document.querySelector(`[data-method="${method}"]`);
+        if (selectedCard) selectedCard.classList.add("active");
+
+        if (method === "bkash" || method === "nagad") {
+            currency.textContent = "BDT"; amount.min = "100"; amount.placeholder = "Minimum 100"; minimumText.textContent = "Minimum deposit: ৳100";
+        }
+        if (method === "binance") {
+            currency.textContent = "USD"; amount.min = "1"; amount.placeholder = "Minimum 1"; minimumText.textContent = "Minimum deposit: $1";
+        }
+    });
+
+    /* COPY BUTTON LOGIC */
+    const copyButtons = document.querySelectorAll(".copy-btn");
+    copyButtons.forEach(button => {
+        button.addEventListener("click", function(event) {
+            event.stopPropagation();
+            window.hideMessages();
+            
+            const text = button.dataset.copy;
+            if(!text) return; // Prevent empty copy if Firebase data not loaded
+            
+            const fallbackCopy = (textToCopy) => {
+                const textArea = document.createElement("textarea");
+                textArea.value = textToCopy;
+                textArea.style.position = "fixed"; 
+                textArea.style.left = "-999999px"; 
+                document.body.appendChild(textArea);
+                textArea.focus();
+                textArea.select();
+                try { document.execCommand('copy'); } catch (err) { console.error('কপি করতে সমস্যা হয়েছে', err); }
+                document.body.removeChild(textArea);
+            };
+
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(text).catch(() => fallbackCopy(text));
+            } else {
+                fallbackCopy(text);
+            }
+
+            const oldHtml = button.innerHTML;
+            button.innerHTML = "✓ Copied";
+            setTimeout(() => button.innerHTML = oldHtml, 1500);
+        });
+    });
+
+    paymentCards.forEach(card => {
+        card.addEventListener("click", function() {
+            const method = card.dataset.method;
+            paymentMethod.value = method;
+            paymentMethod.dispatchEvent(new Event("change"));
+        });
+    });
+</script>
+
+<!-- FIREBASE SCRIPT (Dymanic Settings & DB Submit) -->
+<script type="module">
+    import { checkAuthStatus, logoutUser, auth, db } from './firebase.js';
+    import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { doc, getDoc, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    checkAuthStatus();
+    
+    let currentUser = null;
+    onAuthStateChanged(auth, (user) => {
+        if (user) { currentUser = user; }
+    });
+
+    // ১. ফায়ারবেস থেকে পেমেন্ট নাম্বার লোড করা
+    async function loadPaymentSettings() {
+        try {
+            const docSnap = await getDoc(doc(db, "settings", "payment_info"));
+            if (docSnap.exists()) {
+                const data = docSnap.data();
+                
+                if(data.bkash) {
+                    document.getElementById("bkashText").textContent = data.bkash;
+                    document.getElementById("copyBkashBtn").dataset.copy = data.bkash;
+                } else {
+                    document.getElementById("bkashText").textContent = "Not set";
+                }
+                
+                if(data.nagad) {
+                    document.getElementById("nagadText").textContent = data.nagad;
+                    document.getElementById("copyNagadBtn").dataset.copy = data.nagad;
+                } else {
+                    document.getElementById("nagadText").textContent = "Not set";
+                }
+                
+                if(data.binance) {
+                    document.getElementById("binanceText").textContent = data.binance;
+                    document.getElementById("copyBinanceBtn").dataset.copy = data.binance;
+                } else {
+                    document.getElementById("binanceText").textContent = "Not set";
+                }
+            }
+        } catch (error) {
+            console.error("পেমেন্ট ইনফো লোড করতে সমস্যা:", error);
+        }
+    }
+    loadPaymentSettings();
+
+    // ২. ফায়ারবেস ডাটাবেসে ফর্ম সাবমিট করা
+    const depositForm = document.getElementById("depositForm");
+    const submitButton = document.getElementById("submitButton");
+
+    depositForm.addEventListener("submit", async function(event) {
+        event.preventDefault();
+        window.hideMessages();
+
+        const method = document.getElementById("paymentMethod").value;
+        const amountValue = parseFloat(document.getElementById("amount").value);
+        const trxIdValue = document.getElementById("transactionId").value.trim();
+
+        if (!method) { window.showError("একটি Payment Method নির্বাচন করুন।"); return; }
+        if (method === "binance" && amountValue < 1) { window.showError("Binance-এর জন্য সর্বনিম্ন Deposit $1।"); return; }
+        if ((method === "bkash" || method === "nagad") && amountValue < 100) { window.showError("bKash/Nagad-এর জন্য সর্বনিম্ন Deposit ৳100।"); return; }
+        if (!trxIdValue) { window.showError("Transaction ID লিখুন।"); return; }
+        if (!currentUser) { window.showError("অ্যাকাউন্ট ভেরিফাই করা যাচ্ছে না। আবার লগইন করুন।"); return; }
+
+        submitButton.disabled = true;
+        submitButton.textContent = "Submitting to Database...";
+
+        try {
+            // অ্যাডমিন প্যানেলে দেখানোর জন্য ডাটাবেসে সেভ করা হচ্ছে
+            await addDoc(collection(db, "deposits"), {
+                userId: currentUser.uid,
+                userEmail: currentUser.email,
+                method: method,
+                amount: amountValue,
+                transactionId: trxIdValue,
+                status: "pending",
+                timestamp: serverTimestamp()
+            });
+
+            window.showSuccess("Deposit Request সফলভাবে Submit হয়েছে।");
+            depositForm.reset();
+            
+            // রিসেট UI
+            document.getElementById("currency").textContent = "BDT"; 
+            document.getElementById("amount").min = "100"; 
+            document.getElementById("amount").placeholder = "Minimum 100"; 
+            document.getElementById("minimumText").textContent = "Minimum deposit: ৳100";
+            document.querySelectorAll(".payment-method").forEach(card => card.classList.remove("active"));
+            
+        } catch (error) {
+            console.error("Error submitting deposit:", error);
+            window.showError("সার্ভারে সমস্যা হয়েছে। আবার চেষ্টা করুন।");
+        } finally {
+            submitButton.disabled = false;
+            submitButton.textContent = "Deposit Request Submit করুন";
+        }
+    });
+
+    // ৩. লগআউট লজিক
+    const logoutBtn = document.getElementById("logoutButton");
+    if(logoutBtn) {
+        logoutBtn.onclick = function(e) {
+            e.preventDefault();
+            const confirmed = confirm("আপনি কি Logout করতে চান?");
+            if (confirmed) {
+                logoutUser();
+            }
+        };
+    }
+</script>
+
+</body>
+</html>

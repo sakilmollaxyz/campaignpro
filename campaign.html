@@ -1,0 +1,2605 @@
+<!DOCTYPE html>
+<html lang="bn">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Create Campaign - CampaignPro</title>
+
+    <!-- টেলিগ্রাম ওয়েবের স্ক্রিপ্ট -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family:
+                Arial,
+                "Noto Sans Bengali",
+                "Segoe UI",
+                sans-serif;
+
+            background: #f5f7fb;
+            color: #172033;
+
+            min-height: 100vh;
+        }
+
+
+        /* =====================================================
+           SIDEBAR
+        ===================================================== */
+
+        .sidebar {
+            position: fixed;
+
+            top: 0;
+            left: 0;
+
+            width: 250px;
+            height: 100vh;
+
+            background: #111827;
+            color: #ffffff;
+
+            padding: 22px 15px;
+
+            overflow-y: auto;
+
+            z-index: 1000;
+
+            transition: transform .25s ease;
+
+            display: flex;
+            flex-direction: column;
+        }
+
+
+        /* =====================================================
+           BRAND
+        ===================================================== */
+
+        .brand {
+            padding: 5px 12px 25px;
+
+            border-bottom:
+                1px solid #263142;
+
+            margin-bottom: 20px;
+        }
+
+        .brand-name {
+            font-size: 23px;
+
+            font-weight: 800;
+
+            letter-spacing: -.3px;
+        }
+
+        .brand-name span {
+            color: #10b981;
+        }
+
+        .brand-subtitle {
+            color: #94a3b8;
+
+            font-size: 11px;
+
+            margin-top: 5px;
+        }
+
+
+        /* =====================================================
+           MENU TITLE
+        ===================================================== */
+
+        .menu-title {
+            color: #64748b;
+
+            font-size: 11px;
+
+            font-weight: 700;
+
+            text-transform: uppercase;
+
+            padding: 0 12px;
+
+            margin-bottom: 8px;
+
+            letter-spacing: .5px;
+        }
+
+
+        /* =====================================================
+           MENU
+        ===================================================== */
+
+        .sidebar-menu {
+            list-style: none;
+        }
+
+        .sidebar-menu li {
+            margin-bottom: 4px;
+        }
+
+        .sidebar-menu a {
+            display: flex;
+
+            align-items: center;
+
+            gap: 11px;
+
+            padding: 11px 12px;
+
+            color: #cbd5e1;
+
+            text-decoration: none;
+
+            border-radius: 9px;
+
+            font-size: 14px;
+
+            font-weight: 600;
+
+            transition:
+                background .2s,
+                color .2s,
+                transform .2s;
+        }
+
+        .sidebar-menu a:hover {
+            background: #1f2937;
+
+            color: #ffffff;
+
+            transform:
+                translateX(2px);
+        }
+
+        .sidebar-menu a.active {
+            background: #059669;
+
+            color: #ffffff;
+
+            box-shadow:
+                0 4px 12px
+                rgba(5, 150, 105, .18);
+        }
+
+        .menu-icon {
+            width: 22px;
+
+            min-width: 22px;
+
+            text-align: center;
+
+            font-size: 16px;
+        }
+
+
+        /* =====================================================
+           SIDEBAR BOTTOM
+        ===================================================== */
+
+        .sidebar-bottom {
+            margin-top: auto;
+
+            padding-top: 15px;
+        }
+
+
+        /* =====================================================
+           HELP & SUPPORT
+           সাধারণ menu item-এর মতোই থাকবে
+        ===================================================== */
+
+        .help-link {
+            display: flex;
+
+            align-items: center;
+
+            gap: 11px;
+
+            padding: 11px 12px;
+
+            color: #cbd5e1;
+
+            text-decoration: none;
+
+            border-radius: 9px;
+
+            font-size: 14px;
+
+            font-weight: 600;
+
+            transition:
+                background .2s,
+                color .2s,
+                transform .2s;
+        }
+
+        .help-link:hover {
+            background: #1f2937;
+
+            color: #ffffff;
+
+            transform:
+                translateX(2px);
+        }
+
+
+        /* =====================================================
+           LOGOUT BUTTON
+        ===================================================== */
+
+        .logout-btn {
+            width: 100%;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: flex-start;
+
+            gap: 11px;
+
+            margin-top: 12px;
+
+            padding: 11px 12px;
+
+            border: 1px solid
+                rgba(255, 255, 255, .07);
+
+            border-radius: 9px;
+
+            background: rgba(255, 255, 255, .035);
+
+            color: #cbd5e1;
+
+            font-family: inherit;
+
+            font-size: 14px;
+
+            font-weight: 600;
+
+            cursor: pointer;
+
+            box-shadow:
+                0 3px 10px
+                rgba(0, 0, 0, .10);
+
+            transition:
+                background .2s,
+                color .2s,
+                border-color .2s,
+                transform .2s,
+                box-shadow .2s;
+        }
+
+        .logout-btn:hover {
+            background:
+                rgba(239, 68, 68, .10);
+
+            color: #fca5a5;
+
+            border-color:
+                rgba(239, 68, 68, .18);
+
+            transform:
+                translateY(-1px);
+
+            box-shadow:
+                0 5px 14px
+                rgba(0, 0, 0, .15);
+        }
+
+        .logout-icon {
+            width: 22px;
+
+            min-width: 22px;
+
+            text-align: center;
+
+            font-size: 16px;
+        }
+
+
+        /* =====================================================
+           MOBILE TOPBAR
+        ===================================================== */
+
+        .mobile-topbar {
+            display: none;
+
+            position: fixed;
+
+            top: 0;
+            left: 0;
+            right: 0;
+
+            height: 62px;
+
+            background: #111827;
+
+            color: #ffffff;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            padding: 0 16px;
+
+            z-index: 900;
+
+            box-shadow:
+                0 3px 15px
+                rgba(0, 0, 0, .15);
+        }
+
+        .mobile-brand {
+            font-size: 20px;
+
+            font-weight: 800;
+        }
+
+        .mobile-brand span {
+            color: #10b981;
+        }
+
+        .menu-button {
+            border: none;
+
+            background: #1f2937;
+
+            color: #ffffff;
+
+            width: 40px;
+            height: 40px;
+
+            border-radius: 8px;
+
+            font-size: 20px;
+
+            cursor: pointer;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            transition: .2s;
+        }
+
+        .menu-button:hover {
+            background: #374151;
+        }
+
+
+        /* =====================================================
+           OVERLAY
+        ===================================================== */
+
+        .sidebar-overlay {
+            display: none;
+
+            position: fixed;
+
+            inset: 0;
+
+            background:
+                rgba(0, 0, 0, .45);
+
+            z-index: 950;
+        }
+
+
+        /* =====================================================
+           MAIN CONTENT
+        ===================================================== */
+
+        .main-content {
+            margin-left: 250px;
+
+            min-height: 100vh;
+
+            padding: 30px;
+        }
+
+        .page {
+            width: 100%;
+
+            max-width: 900px;
+
+            margin: 0 auto;
+        }
+
+
+        /* =====================================================
+           PAGE TITLE
+        ===================================================== */
+
+        .page-title {
+            margin-bottom: 22px;
+        }
+
+        .page-title h1 {
+            font-size: 28px;
+
+            margin-bottom: 7px;
+
+            line-height: 1.3;
+        }
+
+        .page-title p {
+            color: #64748b;
+
+            font-size: 14px;
+
+            line-height: 1.7;
+        }
+
+
+        /* =====================================================
+           CARD
+        ===================================================== */
+
+        .card {
+            background: #ffffff;
+
+            border-radius: 16px;
+
+            padding: 24px;
+
+            margin-bottom: 20px;
+
+            box-shadow:
+                0 8px 30px
+                rgba(15, 23, 42, .06);
+        }
+
+        .card-title {
+            font-size: 18px;
+
+            font-weight: 700;
+
+            margin-bottom: 18px;
+        }
+
+
+        /* =====================================================
+           BALANCE
+        ===================================================== */
+
+        .balance-box {
+            background:
+                linear-gradient(
+                    135deg,
+                    #ecfdf5,
+                    #f0fdf4
+                );
+
+            border:
+                1px solid #bbf7d0;
+
+            border-radius: 12px;
+
+            padding: 16px;
+
+            margin-bottom: 22px;
+        }
+
+        .balance-label {
+            color: #64748b;
+
+            font-size: 13px;
+
+            margin-bottom: 5px;
+        }
+
+        .balance {
+            color: #047857;
+
+            font-size: 26px;
+
+            font-weight: 800;
+        }
+
+
+        /* =====================================================
+           CAMPAIGN OPTIONS
+        ===================================================== */
+
+        .campaign-options {
+            display: grid;
+
+            grid-template-columns:
+                repeat(3, 1fr);
+
+            gap: 14px;
+        }
+
+        .campaign-option {
+            border:
+                2px solid #e2e8f0;
+
+            border-radius: 13px;
+
+            padding: 18px;
+
+            cursor: pointer;
+
+            background: #ffffff;
+
+            transition: .2s;
+        }
+
+        .campaign-option:hover {
+            border-color: #10b981;
+
+            transform:
+                translateY(-2px);
+
+            box-shadow:
+                0 6px 18px
+                rgba(5, 150, 105, .08);
+        }
+
+        .campaign-option.selected {
+            border-color: #059669;
+
+            background: #ecfdf5;
+
+            box-shadow:
+                0 5px 16px
+                rgba(5, 150, 105, .10);
+        }
+
+        .campaign-icon {
+            font-size: 25px;
+
+            margin-bottom: 8px;
+        }
+
+        .campaign-name {
+            font-weight: 700;
+
+            font-size: 16px;
+
+            margin-bottom: 7px;
+        }
+
+        .campaign-price {
+            font-size: 24px;
+
+            font-weight: 800;
+
+            margin-bottom: 7px;
+        }
+
+        .campaign-limit {
+            color: #64748b;
+
+            font-size: 13px;
+        }
+
+
+        /* =====================================================
+           FORM
+        ===================================================== */
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        label {
+            display: block;
+
+            font-size: 14px;
+
+            font-weight: 700;
+
+            margin-bottom: 7px;
+        }
+
+        input,
+        textarea {
+            width: 100%;
+
+            padding: 13px 14px;
+
+            border:
+                1px solid #dbe1ea;
+
+            border-radius: 9px;
+
+            outline: none;
+
+            font-size: 15px;
+
+            background: #ffffff;
+
+            color: #172033;
+
+            transition: .2s;
+        }
+
+        input:focus,
+        textarea:focus {
+            border-color: #059669;
+
+            box-shadow:
+                0 0 0 3px
+                rgba(5, 150, 105, .10);
+        }
+
+        input:disabled {
+            background: #f8fafc;
+
+            cursor: not-allowed;
+        }
+
+        textarea {
+            min-height: 120px;
+
+            resize: vertical;
+
+            line-height: 1.6;
+        }
+
+
+        /* =====================================================
+           COUNTRY
+        ===================================================== */
+
+        .country-header {
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            gap: 10px;
+
+            margin-bottom: 12px;
+        }
+
+        .country-title {
+            font-size: 17px;
+
+            font-weight: 700;
+        }
+
+        .country-count {
+            color: #059669;
+
+            background: #ecfdf5;
+
+            border:
+                1px solid #a7f3d0;
+
+            padding: 6px 10px;
+
+            border-radius: 20px;
+
+            font-size: 12px;
+
+            font-weight: 700;
+
+            white-space: nowrap;
+        }
+
+        .country-info {
+            color: #64748b;
+
+            background: #f8fafc;
+
+            border-radius: 9px;
+
+            padding: 10px 12px;
+
+            font-size: 13px;
+
+            margin-bottom: 13px;
+
+            line-height: 1.5;
+        }
+
+        .country-search {
+            margin-bottom: 13px;
+        }
+
+        .country-grid {
+            display: grid;
+
+            grid-template-columns:
+                repeat(2, 1fr);
+
+            gap: 8px;
+
+            max-height: 450px;
+
+            overflow-y: auto;
+
+            padding-right: 3px;
+        }
+
+        .country-grid::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .country-grid::-webkit-scrollbar-track {
+            background: #f1f5f9;
+
+            border-radius: 10px;
+        }
+
+        .country-grid::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+
+            border-radius: 10px;
+        }
+
+        .country-item {
+            border:
+                1px solid #e5e7eb;
+
+            border-radius: 9px;
+
+            background: #ffffff;
+
+            transition: .15s;
+        }
+
+        .country-item:hover {
+            border-color: #10b981;
+
+            background: #f0fdf4;
+        }
+
+        .country-item.selected {
+            border-color: #059669;
+
+            background: #ecfdf5;
+        }
+
+        .country-label {
+            display: flex;
+
+            align-items: center;
+
+            gap: 9px;
+
+            padding: 10px;
+
+            cursor: pointer;
+
+            font-size: 14px;
+
+            margin: 0;
+        }
+
+        .country-label input {
+            width: auto;
+
+            margin: 0;
+
+            accent-color: #059669;
+
+            cursor: pointer;
+        }
+
+        .country-label input:disabled {
+            cursor: not-allowed;
+        }
+
+
+        /* =====================================================
+           SUBMIT
+        ===================================================== */
+
+        .submit-btn {
+            width: 100%;
+
+            border: none;
+
+            background: #059669;
+
+            color: #ffffff;
+
+            padding: 14px;
+
+            border-radius: 9px;
+
+            font-size: 15px;
+
+            font-weight: 700;
+
+            cursor: pointer;
+
+            transition: .2s;
+        }
+
+        .submit-btn:hover:not(:disabled) {
+            background: #047857;
+
+            transform:
+                translateY(-1px);
+
+            box-shadow:
+                0 5px 15px
+                rgba(5, 150, 105, .18);
+        }
+
+        .submit-btn:disabled {
+            opacity: .6;
+
+            cursor: not-allowed;
+        }
+
+
+        /* =====================================================
+           MESSAGE
+        ===================================================== */
+
+        .message {
+            display: none;
+
+            padding: 12px 14px;
+
+            border-radius: 9px;
+
+            margin-bottom: 18px;
+
+            font-size: 13px;
+
+            line-height: 1.5;
+        }
+
+        .message.error {
+            background: #fee2e2;
+
+            color: #991b1b;
+
+            border:
+                1px solid #fecaca;
+        }
+
+        .message.success {
+            background: #dcfce7;
+
+            color: #166534;
+
+            border:
+                1px solid #bbf7d0;
+        }
+
+
+        /* =====================================================
+           MOBILE
+        ===================================================== */
+
+        @media (max-width: 700px) {
+
+            .sidebar {
+                transform:
+                    translateX(-100%);
+
+                box-shadow:
+                    8px 0 25px
+                    rgba(0, 0, 0, .18);
+            }
+
+            .sidebar.open {
+                transform:
+                    translateX(0);
+            }
+
+            .sidebar-overlay.show {
+                display: block;
+            }
+
+            .mobile-topbar {
+                display: flex;
+            }
+
+            .main-content {
+                margin-left: 0;
+
+                padding:
+                    82px 15px 25px;
+            }
+
+            .campaign-options {
+                grid-template-columns: 1fr;
+            }
+
+            .country-grid {
+                grid-template-columns: 1fr;
+
+                max-height: 400px;
+            }
+
+            .card {
+                padding: 18px;
+
+                border-radius: 13px;
+            }
+
+            .page-title h1 {
+                font-size: 24px;
+            }
+
+            .page-title p {
+                font-size: 13px;
+            }
+
+            .country-header {
+                align-items: flex-start;
+
+                flex-direction: column;
+            }
+
+            .country-count {
+                font-size: 11px;
+            }
+
+        }
+
+
+        /* =====================================================
+           SMALL MOBILE
+        ===================================================== */
+
+        @media (max-width: 400px) {
+
+            .main-content {
+                padding-left: 10px;
+
+                padding-right: 10px;
+            }
+
+            .card {
+                padding: 15px;
+            }
+
+            .campaign-option {
+                padding: 15px;
+            }
+
+            .page-title h1 {
+                font-size: 22px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<!-- =====================================================
+     SIDEBAR
+===================================================== -->
+
+<aside
+    class="sidebar"
+    id="sidebar"
+>
+
+
+    <!-- BRAND -->
+
+    <div class="brand">
+
+        <div class="brand-name">
+            Campaign<span>Pro</span>
+        </div>
+
+        <div class="brand-subtitle">
+            Smart Campaign Management
+        </div>
+
+    </div>
+
+
+    <!-- MENU TITLE -->
+
+    <div class="menu-title">
+        Main Menu
+    </div>
+
+
+    <!-- MAIN MENU -->
+
+    <ul class="sidebar-menu">
+
+
+        <!-- DASHBOARD -->
+
+        <li>
+
+            <a href="dashboard.html">
+
+                <span class="menu-icon">
+                    🏠
+                </span>
+
+                <span>
+                    Dashboard
+                </span>
+
+            </a>
+
+        </li>
+
+
+        <!-- CREATE CAMPAIGN -->
+
+        <li>
+
+            <a
+                href="campaign.html"
+                class="active"
+            >
+
+                <span class="menu-icon">
+                    📢
+                </span>
+
+                <span>
+                    Create Campaign
+                </span>
+
+            </a>
+
+        </li>
+
+
+        <!-- DEPOSIT -->
+
+        <li>
+
+            <a href="deposit.html">
+
+                <span class="menu-icon">
+                    💳
+                </span>
+
+                <span>
+                    Deposit
+                </span>
+
+            </a>
+
+        </li>
+
+
+        <!-- MY CAMPAIGNS -->
+
+        <li>
+
+            <a href="campaigns.html">
+
+                <span class="menu-icon">
+                    📊
+                </span>
+
+                <span>
+                    My Campaigns
+                </span>
+
+            </a>
+
+        </li>
+
+
+        <!-- NOTIFICATIONS -->
+
+        <li>
+
+            <a href="notification.html">
+
+                <span class="menu-icon">
+                    🔔
+                </span>
+
+                <span>
+                    Notifications
+                </span>
+
+            </a>
+
+        </li>
+
+
+        <!-- HELP & SUPPORT -->
+
+        <li>
+
+            <a
+                href="help.html"
+                class="help-link"
+            >
+
+                <span class="menu-icon">
+                    ❓
+                </span>
+
+                <span>
+                    Help & Support
+                </span>
+
+            </a>
+
+        </li>
+
+
+    </ul>
+
+
+    <!-- =================================================
+         BOTTOM
+    ================================================= -->
+
+    <div class="sidebar-bottom">
+
+
+        <!-- LOGOUT -->
+
+        <button
+            type="button"
+            class="logout-btn"
+            id="logoutButton"
+        >
+
+            <span class="logout-icon">
+                🚪
+            </span>
+
+            <span>
+                Logout
+            </span>
+
+        </button>
+
+
+    </div>
+
+
+</aside>
+
+
+<!-- =====================================================
+     MOBILE TOPBAR
+===================================================== -->
+
+<div class="mobile-topbar">
+
+    <div class="mobile-brand">
+        Campaign<span>Pro</span>
+    </div>
+
+    <button
+        class="menu-button"
+        id="menuButton"
+        type="button"
+        aria-label="Open Menu"
+    >
+        ☰
+    </button>
+
+</div>
+
+
+<!-- =====================================================
+     SIDEBAR OVERLAY
+===================================================== -->
+
+<div
+    class="sidebar-overlay"
+    id="sidebarOverlay"
+></div>
+
+
+<!-- =====================================================
+     MAIN CONTENT
+===================================================== -->
+
+<main class="main-content">
+
+
+<div class="page">
+
+
+    <!-- PAGE TITLE -->
+
+    <div class="page-title">
+
+        <h1>
+            নতুন Campaign তৈরি করুন
+        </h1>
+
+        <p>
+            আপনার বাজেট নির্বাচন করুন এবং
+            আপনার বিজ্ঞাপনের জন্য প্রয়োজনীয়
+            Target Country নির্বাচন করুন।
+        </p>
+
+    </div>
+
+
+    <!-- =================================================
+         MESSAGES
+    ================================================= -->
+
+    <div
+        id="errorMessage"
+        class="message error"
+    ></div>
+
+    <div
+        id="successMessage"
+        class="message success"
+    ></div>
+
+
+    <!-- =================================================
+         BALANCE + CAMPAIGN BUDGET
+    ================================================= -->
+
+    <div class="card">
+
+
+        <!-- BALANCE -->
+
+        <div class="balance-box">
+
+            <div class="balance-label">
+                Available Balance
+            </div>
+
+            <div class="balance">
+                ৳0.00
+            </div>
+
+        </div>
+
+
+        <!-- TITLE -->
+
+        <div class="card-title">
+            Campaign Budget নির্বাচন করুন
+        </div>
+
+
+        <!-- OPTIONS -->
+
+        <div class="campaign-options">
+
+
+            <!-- NORMAL -->
+
+            <div
+                class="campaign-option"
+                data-tier="normal"
+                data-amount="50"
+                data-limit="5"
+            >
+
+                <div class="campaign-icon">
+                    🟢
+                </div>
+
+                <div class="campaign-name">
+                    Normal Campaign
+                </div>
+
+                <div class="campaign-price">
+                    ৳50
+                </div>
+
+                <div class="campaign-limit">
+                    সর্বোচ্চ 5টি Country
+                </div>
+
+            </div>
+
+
+            <!-- MEDIUM -->
+
+            <div
+                class="campaign-option"
+                data-tier="medium"
+                data-amount="100"
+                data-limit="10"
+            >
+
+                <div class="campaign-icon">
+                    🟡
+                </div>
+
+                <div class="campaign-name">
+                    Medium Campaign
+                </div>
+
+                <div class="campaign-price">
+                    ৳100
+                </div>
+
+                <div class="campaign-limit">
+                    সর্বোচ্চ 10টি Country
+                </div>
+
+            </div>
+
+
+            <!-- HIGH -->
+
+            <div
+                class="campaign-option"
+                data-tier="high"
+                data-amount="200"
+                data-limit="15"
+            >
+
+                <div class="campaign-icon">
+                    🔴
+                </div>
+
+                <div class="campaign-name">
+                    High Campaign
+                </div>
+
+                <div class="campaign-price">
+                    ৳200
+                </div>
+
+                <div class="campaign-limit">
+                    সর্বোচ্চ 15টি Country
+                </div>
+
+            </div>
+
+
+        </div>
+
+    </div>
+
+
+    <!-- =================================================
+         CAMPAIGN FORM
+    ================================================= -->
+
+    <div class="card">
+
+
+        <div class="card-title">
+            Campaign Information
+        </div>
+
+
+        <form id="campaignForm">
+
+
+            <!-- SELECTED BUDGET -->
+
+            <div class="form-group">
+
+                <label for="selectedBudget">
+                    Selected Campaign Budget
+                </label>
+
+                <input
+                    type="text"
+                    id="selectedBudget"
+                    value="কোনো Budget নির্বাচন করা হয়নি"
+                    readonly
+                >
+
+            </div>
+
+
+            <!-- COUNTRIES -->
+
+            <div class="form-group">
+
+
+                <div class="country-header">
+
+                    <div class="country-title">
+                        🌍 Target Countries
+                    </div>
+
+                    <div
+                        class="country-count"
+                        id="countryCount"
+                    >
+                        0 / 0 Selected
+                    </div>
+
+                </div>
+
+
+                <div
+                    class="country-info"
+                    id="countryInfo"
+                >
+                    প্রথমে Campaign Budget নির্বাচন করুন।
+                </div>
+
+
+                <!-- SEARCH -->
+
+                <input
+                    type="text"
+                    id="countrySearch"
+                    class="country-search"
+                    placeholder="🔍 Country Search..."
+                    autocomplete="off"
+                    disabled
+                >
+
+
+                <!-- COUNTRY GRID -->
+
+                <div
+                    class="country-grid"
+                    id="countryGrid"
+                >
+
+
+                    <div class="country-item" data-country="united states">
+                        <label class="country-label">
+                            <input type="checkbox" value="United States" disabled>
+                            🇺🇸 United States
+                        </label>
+                    </div>
+
+                    <div class="country-item" data-country="united kingdom">
+                        <label class="country-label">
+                            <input type="checkbox" value="United Kingdom" disabled>
+                            🇬🇧 United Kingdom
+                        </label>
+                    </div>
+
+                    <div class="country-item" data-country="canada">
+                        <label class="country-label">
+                            <input type="checkbox" value="Canada" disabled>
+                            🇨🇦 Canada
+                        </label>
+                    </div>
+
+                    <div class="country-item" data-country="australia">
+                        <label class="country-label">
+                            <input type="checkbox" value="Australia" disabled>
+                            🇦🇺 Australia
+                        </label>
+                    </div>
+
+                    <div class="country-item" data-country="germany">
+                        <label class="country-label">
+                            <input type="checkbox" value="Germany" disabled>
+                            🇩🇪 Germany
+                        </label>
+                    </div>
+
+                    <div class="country-item" data-country="france">
+                        <label class="country-label">
+                            <input type="checkbox" value="France" disabled>
+                            🇫🇷 France
+                        </label>
+                    </div>
+
+                    <div class="country-item" data-country="switzerland">
+                        <label class="country-label">
+                            <input type="checkbox" value="Switzerland" disabled>
+                            🇨🇭 Switzerland
+                        </label>
+                    </div>
+
+                    <div class="country-item" data-country="norway">
+                        <label class="country-label">
+                            <input type="checkbox" value="Norway" disabled>
+                            🇳🇴 Norway
+                        </label>
+                    </div>
+
+                    <div class="country-item" data-country="sweden">
+                        <label class="country-label">
+                            <input type="checkbox" value="Sweden" disabled>
+                            🇸🇪 Sweden
+                        </label>
+                    </div>
+
+                    <div class="country-item" data-country="denmark">
+                        <label class="country-label">
+                            <input type="checkbox" value="Denmark" disabled>
+                            🇩🇰 Denmark
+                        </label>
+                    </div>
+
+                    <div class="country-item" data-country="finland">
+                        <label class="country-label">
+                            <input type="checkbox" value="Finland" disabled>
+                            🇫🇮 Finland
+                        </label>
+                    </div>
+
+                    <div class="country-item" data-country="netherlands">
+                        <label class="country-label">
+                            <input type="checkbox" value="Netherlands" disabled>
+                            🇳🇱 Netherlands
+                        </label>
+                    </div>
+
+                    <div class="country-item" data-country="new zealand">
+                        <label class="country-label">
+                            <input type="checkbox" value="New Zealand" disabled>
+                            🇳🇿 New Zealand
+                        </label>
+                    </div>
+
+                    <div class="country-item" data-country="singapore">
+                        <label class="country-label">
+                            <input type="checkbox" value="Singapore" disabled>
+                            🇸🇬 Singapore
+                        </label>
+                    </div>
+
+                    <div class="country-item" data-country="ireland">
+                        <label class="country-label">
+                            <input type="checkbox" value="Ireland" disabled>
+                            🇮🇪 Ireland
+                        </label>
+                    </div>
+
+                    <div class="country-item" data-country="austria">
+                        <label class="country-label">
+                            <input type="checkbox" value="Austria" disabled>
+                            🇦🇹 Austria
+                        </label>
+                    </div>
+
+                    <div class="country-item" data-country="belgium">
+                        <label class="country-label">
+                            <input type="checkbox" value="Belgium" disabled>
+                            🇧🇪 Belgium
+                        </label>
+                    </div>
+
+                    <div class="country-item" data-country="japan">
+                        <label class="country-label">
+                            <input type="checkbox" value="Japan" disabled>
+                            🇯🇵 Japan
+                        </label>
+                    </div>
+
+                    <div class="country-item" data-country="south korea">
+                        <label class="country-label">
+                            <input type="checkbox" value="South Korea" disabled>
+                            🇰🇷 South Korea
+                        </label>
+                    </div>
+
+                    <div class="country-item" data-country="israel">
+                        <label class="country-label">
+                            <input type="checkbox" value="Israel" disabled>
+                            🇮🇱 Israel
+                        </label>
+                    </div>
+
+                    <div class="country-item" data-country="united arab emirates">
+                        <label class="country-label">
+                            <input type="checkbox" value="United Arab Emirates" disabled>
+                            🇦🇪 United Arab Emirates
+                        </label>
+                    </div>
+
+                    <div class="country-item" data-country="saudi arabia">
+                        <label class="country-label">
+                            <input type="checkbox" value="Saudi Arabia" disabled>
+                            🇸🇦 Saudi Arabia
+                        </label>
+                    </div>
+
+                    <div class="country-item" data-country="spain">
+                        <label class="country-label">
+                            <input type="checkbox" value="Spain" disabled>
+                            🇪🇸 Spain
+                        </label>
+                    </div>
+
+                    <div class="country-item" data-country="italy">
+                        <label class="country-label">
+                            <input type="checkbox" value="Italy" disabled>
+                            🇮🇹 Italy
+                        </label>
+                    </div>
+
+                    <div class="country-item" data-country="portugal">
+                        <label class="country-label">
+                            <input type="checkbox" value="Portugal" disabled>
+                            🇵🇹 Portugal
+                        </label>
+                    </div>
+
+                    <div class="country-item" data-country="poland">
+                        <label class="country-label">
+                            <input type="checkbox" value="Poland" disabled>
+                            🇵🇱 Poland
+                        </label>
+                    </div>
+
+                    <div class="country-item" data-country="czech republic">
+                        <label class="country-label">
+                            <input type="checkbox" value="Czech Republic" disabled>
+                            🇨🇿 Czech Republic
+                        </label>
+                    </div>
+
+                    <div class="country-item" data-country="romania">
+                        <label class="country-label">
+                            <input type="checkbox" value="Romania" disabled>
+                            🇷🇴 Romania
+                        </label>
+                    </div>
+
+                    <div class="country-item" data-country="hungary">
+                        <label class="country-label">
+                            <input type="checkbox" value="Hungary" disabled>
+                            🇭🇺 Hungary
+                        </label>
+                    </div>
+
+                    <div class="country-item" data-country="greece">
+                        <label class="country-label">
+                            <input type="checkbox" value="Greece" disabled>
+                            🇬🇷 Greece
+                        </label>
+                    </div>
+
+                    <div class="country-item" data-country="mexico">
+                        <label class="country-label">
+                            <input type="checkbox" value="Mexico" disabled>
+                            🇲🇽 Mexico
+                        </label>
+                    </div>
+
+                    <div class="country-item" data-country="brazil">
+                        <label class="country-label">
+                            <input type="checkbox" value="Brazil" disabled>
+                            🇧🇷 Brazil
+                        </label>
+                    </div>
+
+                    <div class="country-item" data-country="argentina">
+                        <label class="country-label">
+                            <input type="checkbox" value="Argentina" disabled>
+                            🇦🇷 Argentina
+                        </label>
+                    </div>
+
+                    <div class="country-item" data-country="chile">
+                        <label class="country-label">
+                            <input type="checkbox" value="Chile" disabled>
+                            🇨🇱 Chile
+                        </label>
+                    </div>
+
+                    <div class="country-item" data-country="colombia">
+                        <label class="country-label">
+                            <input type="checkbox" value="Colombia" disabled>
+                            🇨🇴 Colombia
+                        </label>
+                    </div>
+
+                    <div class="country-item" data-country="turkey">
+                        <label class="country-label">
+                            <input type="checkbox" value="Turkey" disabled>
+                            🇹🇷 Turkey
+                        </label>
+                    </div>
+
+                    <div class="country-item" data-country="indonesia">
+                        <label class="country-label">
+                            <input type="checkbox" value="Indonesia" disabled>
+                            🇮🇩 Indonesia
+                        </label>
+                    </div>
+
+                    <div class="country-item" data-country="malaysia">
+                        <label class="country-label">
+                            <input type="checkbox" value="Malaysia" disabled>
+                            🇲🇾 Malaysia
+                        </label>
+                    </div>
+
+                    <div class="country-item" data-country="thailand">
+                        <label class="country-label">
+                            <input type="checkbox" value="Thailand" disabled>
+                            🇹🇭 Thailand
+                        </label>
+                    </div>
+
+                    <div class="country-item" data-country="vietnam">
+                        <label class="country-label">
+                            <input type="checkbox" value="Vietnam" disabled>
+                            🇻🇳 Vietnam
+                        </label>
+                    </div>
+
+                    <div class="country-item" data-country="philippines">
+                        <label class="country-label">
+                            <input type="checkbox" value="Philippines" disabled>
+                            🇵🇭 Philippines
+                        </label>
+                    </div>
+
+                    <div class="country-item" data-country="india">
+                        <label class="country-label">
+                            <input type="checkbox" value="India" disabled>
+                            🇮🇳 India
+                        </label>
+                    </div>
+
+                    <div class="country-item" data-country="nigeria">
+                        <label class="country-label">
+                            <input type="checkbox" value="Nigeria" disabled>
+                            🇳🇬 Nigeria
+                        </label>
+                    </div>
+
+                    <div class="country-item" data-country="south africa">
+                        <label class="country-label">
+                            <input type="checkbox" value="South Africa" disabled>
+                            🇿🇦 South Africa
+                        </label>
+                    </div>
+
+                    <div class="country-item" data-country="ghana">
+                        <label class="country-label">
+                            <input type="checkbox" value="Ghana" disabled>
+                            🇬🇭 Ghana
+                        </label>
+                    </div>
+
+                    <div class="country-item" data-country="kenya">
+                        <label class="country-label">
+                            <input type="checkbox" value="Kenya" disabled>
+                            🇰🇪 Kenya
+                        </label>
+                    </div>
+
+                    <div class="country-item" data-country="bangladesh">
+                        <label class="country-label">
+                            <input type="checkbox" value="Bangladesh" disabled>
+                            🇧🇩 Bangladesh
+                        </label>
+                    </div>
+
+                    <div class="country-item" data-country="pakistan">
+                        <label class="country-label">
+                            <input type="checkbox" value="Pakistan" disabled>
+                            🇵🇰 Pakistan
+                        </label>
+                    </div>
+
+                    <div class="country-item" data-country="egypt">
+                        <label class="country-label">
+                            <input type="checkbox" value="Egypt" disabled>
+                            🇪🇬 Egypt
+                        </label>
+                    </div>
+
+                    <div class="country-item" data-country="mozambique">
+                        <label class="country-label">
+                            <input type="checkbox" value="Mozambique" disabled>
+                            🇲🇿 Mozambique
+                        </label>
+                    </div>
+
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 URL
+            ================================================= -->
+
+            <div class="form-group">
+
+                <label for="campaignUrl">
+                    Campaign / Landing URL
+                </label>
+
+                <input
+                    type="url"
+                    id="campaignUrl"
+                    placeholder="https://example.com"
+                    required
+                >
+
+            </div>
+
+
+            <!-- =================================================
+                 DETAILS
+            ================================================= -->
+
+            <div class="form-group">
+
+                <label for="campaignDetails">
+                    Campaign Details
+                </label>
+
+                <textarea
+                    id="campaignDetails"
+                    placeholder="আপনার Campaign সম্পর্কে প্রয়োজনীয় তথ্য লিখুন..."
+                ></textarea>
+
+            </div>
+
+
+            <!-- SUBMIT -->
+
+            <button
+                type="submit"
+                class="submit-btn"
+                id="submitButton"
+                disabled
+            >
+                Campaign Submit করুন
+            </button>
+
+
+        </form>
+
+    </div>
+
+
+</div>
+
+</main>
+
+
+<script>
+
+    /* =====================================================
+       MOBILE SIDEBAR
+    ===================================================== */
+
+    const sidebar =
+        document.getElementById("sidebar");
+
+    const menuButton =
+        document.getElementById("menuButton");
+
+    const sidebarOverlay =
+        document.getElementById("sidebarOverlay");
+
+    const logoutButton =
+        document.getElementById("logoutButton");
+
+
+    function openSidebar() {
+
+        sidebar.classList.add("open");
+
+        sidebarOverlay.classList.add("show");
+
+        menuButton.textContent = "✕";
+
+    }
+
+
+    function closeSidebar() {
+
+        sidebar.classList.remove("open");
+
+        sidebarOverlay.classList.remove("show");
+
+        menuButton.textContent = "☰";
+
+    }
+
+
+    menuButton.addEventListener(
+        "click",
+        function() {
+
+            if (
+                sidebar.classList.contains("open")
+            ) {
+
+                closeSidebar();
+
+            } else {
+
+                openSidebar();
+
+            }
+
+        }
+    );
+
+
+    sidebarOverlay.addEventListener(
+        "click",
+        closeSidebar
+    );
+
+
+    /* =====================================================
+       CLOSE SIDEBAR WHEN MENU LINK CLICKED
+    ===================================================== */
+
+    document
+        .querySelectorAll(
+            ".sidebar-menu a"
+        )
+        .forEach(
+            function(link) {
+
+                link.addEventListener(
+                    "click",
+                    closeSidebar
+                );
+
+            }
+        );
+
+    /* =====================================================
+       CAMPAIGN ELEMENTS
+    ===================================================== */
+
+    const campaignOptions =
+        document.querySelectorAll(
+            ".campaign-option"
+        );
+
+    const selectedBudget =
+        document.getElementById(
+            "selectedBudget"
+        );
+
+    const countryCount =
+        document.getElementById(
+            "countryCount"
+        );
+
+    const countryInfo =
+        document.getElementById(
+            "countryInfo"
+        );
+
+    const countrySearch =
+        document.getElementById(
+            "countrySearch"
+        );
+
+    const countryItems =
+        document.querySelectorAll(
+            ".country-item"
+        );
+
+    const checkboxes =
+        document.querySelectorAll(
+            ".country-item input"
+        );
+
+    const campaignForm =
+        document.getElementById(
+            "campaignForm"
+        );
+
+    const submitButton =
+        document.getElementById(
+            "submitButton"
+        );
+
+    const errorMessage =
+        document.getElementById(
+            "errorMessage"
+        );
+
+    const successMessage =
+        document.getElementById(
+            "successMessage"
+        );
+
+
+    let selectedTier = null;
+
+    let selectedAmount = 0;
+
+    let countryLimit = 0;
+
+
+    /* =====================================================
+       MESSAGE
+    ===================================================== */
+
+    function hideMessages() {
+
+        errorMessage.style.display =
+            "none";
+
+        successMessage.style.display =
+            "none";
+
+    }
+
+
+    function showError(message) {
+
+        errorMessage.textContent =
+            message;
+
+        errorMessage.style.display =
+            "block";
+
+        successMessage.style.display =
+            "none";
+
+        errorMessage.scrollIntoView({
+            behavior: "smooth",
+            block: "nearest"
+        });
+
+    }
+
+
+    function showSuccess(message) {
+
+        successMessage.textContent =
+            message;
+
+        successMessage.style.display =
+            "block";
+
+        errorMessage.style.display =
+            "none";
+
+        successMessage.scrollIntoView({
+            behavior: "smooth",
+            block: "nearest"
+        });
+
+    }
+
+
+    /* =====================================================
+       UPDATE COUNTRY COUNT
+    ===================================================== */
+
+    function updateCountryCount() {
+
+        const selected =
+            document.querySelectorAll(
+                ".country-item input:checked"
+            );
+
+        const count =
+            selected.length;
+
+
+        countryCount.textContent =
+            count +
+            " / " +
+            countryLimit +
+            " Selected";
+
+
+        checkboxes.forEach(
+            function(box) {
+
+                if (!selectedTier) {
+
+                    box.disabled = true;
+
+                    return;
+
+                }
+
+
+                if (
+                    !box.checked &&
+                    count >= countryLimit
+                ) {
+
+                    box.disabled = true;
+
+                } else {
+
+                    box.disabled = false;
+
+                }
+
+            }
+        );
+
+
+        countryItems.forEach(
+            function(item) {
+
+                const checkbox =
+                    item.querySelector(
+                        "input"
+                    );
+
+
+                if (
+                    checkbox.checked
+                ) {
+
+                    item.classList.add(
+                        "selected"
+                    );
+
+                } else {
+
+                    item.classList.remove(
+                        "selected"
+                    );
+
+                }
+
+            }
+        );
+
+
+        submitButton.disabled =
+            !selectedTier ||
+            count < 1 ||
+            count > countryLimit;
+
+    }
+
+
+    /* =====================================================
+       CAMPAIGN SELECT
+    ===================================================== */
+
+    campaignOptions.forEach(
+        function(option) {
+
+            option.addEventListener(
+                "click",
+                function() {
+
+                    hideMessages();
+
+
+                    campaignOptions.forEach(
+                        function(item) {
+
+                            item.classList.remove(
+                                "selected"
+                            );
+
+                        }
+                    );
+
+
+                    option.classList.add(
+                        "selected"
+                    );
+
+
+                    selectedTier =
+                        option.dataset.tier;
+
+
+                    selectedAmount =
+                        Number(
+                            option.dataset.amount
+                        );
+
+
+                    countryLimit =
+                        Number(
+                            option.dataset.limit
+                        );
+
+
+                    const campaignName =
+                        option.querySelector(
+                            ".campaign-name"
+                        ).textContent;
+
+
+                    selectedBudget.value =
+                        "৳" +
+                        selectedAmount +
+                        " — " +
+                        campaignName;
+
+
+                    countrySearch.disabled =
+                        false;
+
+
+                    countryInfo.textContent =
+                        "এই Campaign-এ সর্বোচ্চ " +
+                        countryLimit +
+                        "টি Country নির্বাচন করতে পারবেন।";
+
+
+                    countrySearch.value = "";
+
+
+                    /* RESET COUNTRIES */
+
+                    checkboxes.forEach(
+                        function(box) {
+
+                            box.checked = false;
+
+                            box.disabled = false;
+
+                        }
+                    );
+
+
+                    countryItems.forEach(
+                        function(item) {
+
+                            item.classList.remove(
+                                "selected"
+                            );
+
+                            item.style.display =
+                                "";
+
+                        }
+                    );
+
+
+                    updateCountryCount();
+
+                }
+            );
+
+        }
+    );
+
+
+    /* =====================================================
+       CHECKBOX
+    ===================================================== */
+
+    checkboxes.forEach(
+        function(checkbox) {
+
+            checkbox.addEventListener(
+                "change",
+                function() {
+
+                    hideMessages();
+
+
+                    const selected =
+                        document.querySelectorAll(
+                            ".country-item input:checked"
+                        );
+
+
+                    if (
+                        selected.length >
+                        countryLimit
+                    ) {
+
+                        checkbox.checked =
+                            false;
+
+
+                        showError(
+                            "এই Campaign-এ সর্বোচ্চ " +
+                            countryLimit +
+                            "টি Country নির্বাচন করা যাবে।"
+                        );
+
+                    }
+
+
+                    updateCountryCount();
+
+                }
+            );
+
+        }
+    );
+
+
+    /* =====================================================
+       COUNTRY SEARCH
+    ===================================================== */
+
+    countrySearch.addEventListener(
+        "input",
+        function() {
+
+            const query =
+                countrySearch.value
+                    .trim()
+                    .toLowerCase();
+
+
+            countryItems.forEach(
+                function(item) {
+
+                    const country =
+                        item.dataset.country
+                            .toLowerCase();
+
+
+                    if (
+                        country.includes(query)
+                    ) {
+
+                        item.style.display =
+                            "";
+
+                    } else {
+
+                        item.style.display =
+                            "none";
+
+                    }
+
+                }
+            );
+
+        }
+    );
+
+
+    /* =====================================================
+       FORM SUBMIT
+    ===================================================== */
+
+    campaignForm.addEventListener(
+        "submit",
+        function(event) {
+
+            event.preventDefault();
+
+
+            hideMessages();
+
+
+            const selected =
+                document.querySelectorAll(
+                    ".country-item input:checked"
+                );
+
+
+            const urlInput =
+                document.getElementById(
+                    "campaignUrl"
+                );
+
+
+            const detailsInput =
+                document.getElementById(
+                    "campaignDetails"
+                );
+
+
+            const url =
+                urlInput.value.trim();
+
+
+            const details =
+                detailsInput.value.trim();
+
+
+            /* BUDGET */
+
+            if (!selectedTier) {
+
+                showError(
+                    "প্রথমে একটি Campaign Budget নির্বাচন করুন।"
+                );
+
+                return;
+
+            }
+
+
+            /* COUNTRY */
+
+            if (
+                selected.length < 1
+            ) {
+
+                showError(
+                    "কমপক্ষে ১টি Country নির্বাচন করুন।"
+                );
+
+                return;
+
+            }
+
+
+            if (
+                selected.length >
+                countryLimit
+            ) {
+
+                showError(
+                    "Country selection limit অতিক্রম করেছে।"
+                );
+
+                return;
+
+            }
+
+
+            /* URL */
+
+            if (!url) {
+
+                showError(
+                    "Campaign URL দিন।"
+                );
+
+                urlInput.focus();
+
+                return;
+
+            }
+
+
+            try {
+
+                const parsedUrl =
+                    new URL(url);
+
+
+                if (
+                    parsedUrl.protocol !== "http:" &&
+                    parsedUrl.protocol !== "https:"
+                ) {
+
+                    throw new Error();
+
+                }
+
+            } catch {
+
+                showError(
+                    "একটি সঠিক Campaign URL দিন। উদাহরণ: https://example.com"
+                );
+
+                urlInput.focus();
+
+                return;
+
+            }
+
+
+            /* COUNTRIES */
+
+            const countries =
+                Array.from(
+                    selected
+                ).map(
+                    function(box) {
+
+                        return box.value;
+
+                    }
+                );
+
+
+            /* FINAL DATA */
+
+            const campaignData = {
+
+                tier:
+                    selectedTier,
+
+                amount:
+                    selectedAmount,
+
+                countries:
+                    countries,
+
+                url:
+                    url,
+
+                details:
+                    details
+
+            };
+
+
+            console.log(
+                "Campaign Data:",
+                campaignData
+            );
+
+
+            /* SUCCESS */
+
+            showSuccess(
+                "Campaign তথ্য প্রস্তুত হয়েছে। " +
+                countries.length +
+                "টি Country নির্বাচিত হয়েছে।"
+            );
+
+
+            /*
+                এখানে আপনার Backend / API
+                থাকলে campaignData পাঠাতে পারবেন।
+
+                উদাহরণ:
+
+                fetch("/api/campaign", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(campaignData)
+                });
+            */
+
+        }
+    );
+
+
+    /* =====================================================
+       INITIAL STATE
+    ===================================================== */
+
+    updateCountryCount();
+
+</script>
+
+<!-- =====================================================
+     FIREBASE SCRIPT (NEW)
+===================================================== -->
+<script type="module">
+    import { checkAuthStatus, logoutUser } from './firebase.js';
+
+    // ১. পেজ লোড হলেই ফায়ারবেজ চেক করবে ইউজার লগইন আছে কি না
+    checkAuthStatus();
+
+    // ২. ফায়ারবেজের লগআউট লজিক
+    const fbLogoutButton = document.getElementById("logoutButton");
+    if(fbLogoutButton) {
+        fbLogoutButton.addEventListener("click", function(e) {
+            e.preventDefault();
+            const confirmed = confirm("আপনি কি Logout করতে চান?");
+            if (confirmed) {
+                logoutUser();
+            }
+        });
+    }
+</script>
+
+</body>
+
+</html>
